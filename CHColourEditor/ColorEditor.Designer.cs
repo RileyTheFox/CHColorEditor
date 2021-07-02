@@ -1,7 +1,7 @@
 ﻿
 namespace CHColourEditor
 {
-    partial class ColourEditor
+    partial class ColorEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -62,6 +62,9 @@ namespace CHColourEditor
             this.labelCurrent = new System.Windows.Forms.Label();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.texturePreviewContainer = new System.Windows.Forms.GroupBox();
+            this.texturePreviewImg = new System.Windows.Forms.PictureBox();
+            this.checkForUpdatesBtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.editorContainer)).BeginInit();
             this.editorContainer.Panel1.SuspendLayout();
             this.editorContainer.Panel2.SuspendLayout();
@@ -76,6 +79,8 @@ namespace CHColourEditor
             ((System.ComponentModel.ISupportInitialize)(this.numBlue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numGreen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRed)).BeginInit();
+            this.texturePreviewContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.texturePreviewImg)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileBtn
@@ -444,20 +449,53 @@ namespace CHColourEditor
             // 
             this.saveFileDialog1.RestoreDirectory = true;
             // 
-            // ColourEditor
+            // texturePreviewContainer
+            // 
+            this.texturePreviewContainer.Controls.Add(this.texturePreviewImg);
+            this.texturePreviewContainer.Enabled = false;
+            this.texturePreviewContainer.Location = new System.Drawing.Point(720, 41);
+            this.texturePreviewContainer.Name = "texturePreviewContainer";
+            this.texturePreviewContainer.Size = new System.Drawing.Size(420, 362);
+            this.texturePreviewContainer.TabIndex = 9;
+            this.texturePreviewContainer.TabStop = false;
+            this.texturePreviewContainer.Text = "Texture Preview";
+            this.texturePreviewContainer.Visible = false;
+            // 
+            // texturePreviewImg
+            // 
+            this.texturePreviewImg.Location = new System.Drawing.Point(6, 19);
+            this.texturePreviewImg.Name = "texturePreviewImg";
+            this.texturePreviewImg.Size = new System.Drawing.Size(408, 337);
+            this.texturePreviewImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.texturePreviewImg.TabIndex = 0;
+            this.texturePreviewImg.TabStop = false;
+            // 
+            // checkForUpdatesBtn
+            // 
+            this.checkForUpdatesBtn.Location = new System.Drawing.Point(527, 409);
+            this.checkForUpdatesBtn.Name = "checkForUpdatesBtn";
+            this.checkForUpdatesBtn.Size = new System.Drawing.Size(104, 23);
+            this.checkForUpdatesBtn.TabIndex = 10;
+            this.checkForUpdatesBtn.Text = "Check for Updates";
+            this.checkForUpdatesBtn.UseVisualStyleBackColor = true;
+            this.checkForUpdatesBtn.Click += new System.EventHandler(this.checkForUpdatesBtn_Click);
+            // 
+            // ColorEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(723, 441);
+            this.ClientSize = new System.Drawing.Size(1152, 441);
+            this.Controls.Add(this.checkForUpdatesBtn);
+            this.Controls.Add(this.texturePreviewContainer);
             this.Controls.Add(this.editorContainer);
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.fileOpened);
             this.Controls.Add(this.openFileBtn);
             this.MaximizeBox = false;
-            this.Name = "ColourEditor";
+            this.Name = "ColorEditor";
             this.Text = "Clone Hero Color Editor";
-            this.Load += new System.EventHandler(this.ColourEditor_Load);
+            this.Load += new System.EventHandler(this.ColorEditor_Load);
             this.editorContainer.Panel1.ResumeLayout(false);
             this.editorContainer.Panel2.ResumeLayout(false);
             this.editorContainer.Panel2.PerformLayout();
@@ -473,6 +511,8 @@ namespace CHColourEditor
             ((System.ComponentModel.ISupportInitialize)(this.numBlue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numGreen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRed)).EndInit();
+            this.texturePreviewContainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.texturePreviewImg)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -513,6 +553,9 @@ namespace CHColourEditor
         private System.Windows.Forms.TextBox textboxHexColor;
         private System.Windows.Forms.Button updateColorBtn;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.GroupBox texturePreviewContainer;
+        private System.Windows.Forms.PictureBox texturePreviewImg;
+        private System.Windows.Forms.Button checkForUpdatesBtn;
     }
 }
 
