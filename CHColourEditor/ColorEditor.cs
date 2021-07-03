@@ -15,17 +15,24 @@ using IniParser.Model;
 using IniParser.Parser;
 using IniParser;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace CHColourEditor
 {
     public partial class ColorEditor : Form
     {
-        private const string CURRENT_VERSION_STRING = "1.1";
+#if DEBUG
+        private const string CURRENT_VERSION_STRING = "1.2 DEV BUILD";
+#else
+        private const string CURRENT_VERSION_STRING = "1.2";
+#endif
 
         public IniData iniData;
         private TexturePreviewManager PreviewManager;
 
         #region Variables
+        public bool unsavedChanges = false;
+
         private string OldHexTextBoxText = "";
 
         private HslColor colorHsl = HslColor.FromAhsl(0xff);
@@ -33,9 +40,10 @@ namespace CHColourEditor
         private Color colorRgb;
         private bool lockUpdates = false;
 
-        public Dictionary<string, string> GuitarValues = new Dictionary<string, string>();
-        public Dictionary<string, string> DrumsValues = new Dictionary<string, string>();
-        public Dictionary<string, string> OtherValues = new Dictionary<string, string>();
+        public Dictionary<string, string> GuitarColors = new Dictionary<string, string>();
+        public Dictionary<string, string> DrumsColors = new Dictionary<string, string>();
+        public Dictionary<string, string> OtherColors = new Dictionary<string, string>();
+
         #endregion
 
         public ColorEditor()
@@ -57,41 +65,38 @@ namespace CHColourEditor
             colorRgb = Color.Empty;
             PreviewManager = new TexturePreviewManager(texturePreviewImg);
 
-            Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
+            this.Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
 
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(ColorEditor_OnFormClosing);
+
+#if !DEBUG
             // Automatically check for updates
             Task.Run(() =>
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://rileythefox.co.uk/versions/coloreditor.txt");
-                try
-                {
-                    HttpWebResponse response = (HttpWebResponse) request.GetResponse();
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        string newVersionText = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                string newVersionText = IsOutOfDate().Result;
 
-                        if (newVersionText != CURRENT_VERSION_STRING)
-                        {
-                            if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
-                            {
-                                System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
-                            }
-                        }
+                // If it's empty then there is no update available
+                if(newVersionText != string.Empty)
+                {
+                    if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    {
+                        System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
                     }
                 }
-                catch (WebException)
-                {
-                }
             });
+#endif
         }
 
         #region Event Handlers
 
         #region File Management
+
         private void openFileBtn_Click(object sender, EventArgs e)
         {
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                StreamReader streamReader = null;
+
                 try
                 {
                     // Technically not necessary as the filter prevents this but add it anyways
@@ -102,8 +107,8 @@ namespace CHColourEditor
                     }
 
                     // Read the file and parse it to an IniData object
-                    var sr = new StreamReader(openFileDialog1.FileName);
-                    string iniDataString = sr.ReadToEnd();
+                    streamReader = new StreamReader(openFileDialog1.FileName);
+                    string iniDataString = streamReader.ReadToEnd();
                     iniData = new IniDataParser().Parse(iniDataString);
 
                     // If it doesn't contain these sections it's not a valid CH color file.
@@ -122,10 +127,15 @@ namespace CHColourEditor
 
                     // When saving later, default the file name to be the one opened.
                     saveFileDialog1.FileName = openFileDialog1.FileName;
+                    streamReader.Close();
                 } catch(Exception ex)
                 {
                     MessageBox.Show($"File could not be opened.\n\nError: {ex.Message}\n\nDetauls: {ex.StackTrace}");
                     HideEditor();
+                    if(streamReader != null)
+                    {
+                        streamReader.Close();
+                    }
                 }
             }
         }
@@ -140,23 +150,25 @@ namespace CHColourEditor
                     // Set the values stored in the Dictionaries to the IniData for saving
 
                     // Guitar Values
-                    foreach (KeyValuePair<string, string> pair in GuitarValues)
+                    foreach (KeyValuePair<string, string> pair in GuitarColors)
                     {
                         iniData.Sections["guitar"][pair.Key] = pair.Value;
                     }
                     // Drum Values
-                    foreach (KeyValuePair<string, string> pair in DrumsValues)
+                    foreach (KeyValuePair<string, string> pair in DrumsColors)
                     {
                         iniData.Sections["drums"][pair.Key] = pair.Value;
                     }
                     // Other Values
-                    foreach (KeyValuePair<string, string> pair in OtherValues)
+                    foreach (KeyValuePair<string, string> pair in OtherColors)
                     {
                         iniData.Sections["other"][pair.Key] = pair.Value;
                     }
 
                     var parser = new FileIniDataParser();
                     parser.WriteFile(saveFileDialog1.FileName, iniData, Encoding.UTF8);
+                    unsavedChanges = false;
+                    this.Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
                 }
             }
         }
@@ -175,6 +187,28 @@ namespace CHColourEditor
             this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
             OldHexTextBoxText = "FFFFFF";
+
+            guitarList.SelectionMode = SelectionMode.MultiExtended;
+            drumsList.SelectionMode = SelectionMode.MultiExtended;
+            otherList.SelectionMode = SelectionMode.MultiExtended;
+        }
+
+        private void ColorEditor_OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            if(unsavedChanges)
+            {
+                switch(MessageBox.Show("You have unsaved changes! Would you like to save them?", "CH Color Editor", MessageBoxButtons.YesNoCancel))
+                {
+                    case DialogResult.Yes:
+                        DialogResult result = OpenSaveDialog();
+                        if (result == DialogResult.Cancel)
+                            e.Cancel = true;
+                        break;
+                    case DialogResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
         }
 
         // This is text validation for the Hex text box
@@ -212,62 +246,64 @@ namespace CHColourEditor
         // Updates the color value of the selected item to the one in the color picker
         private void updateColorBtn_Click(object sender, EventArgs e)
         {
-            string item = "";
-
             switch (tabControl1.SelectedIndex)
             {
                 // Guitar
                 case 0:
-                    item = guitarList.SelectedItem.ToString().Trim();
-                    item = item.ToLower().Replace(' ', '_');
-                    GuitarValues[item] = ColorTranslator.ToHtml(colorRgb);
+                    foreach(object selectedItem in guitarList.SelectedItems)
+                    {
+                        string item = selectedItem.ToString().Trim();
+                        item = item.ToLower().Replace(' ', '_');
+                        GuitarColors[item] = ColorTranslator.ToHtml(colorRgb);
+                    }
+                    this.Text = "*CH Color Editor v" + CURRENT_VERSION_STRING;
+                    unsavedChanges = true;
                     break;
                 // Drums
                 case 1:
-                    item = drumsList.SelectedItem.ToString().Trim();
-                    item = item.ToLower().Replace(' ', '_');
-                    DrumsValues[item] = ColorTranslator.ToHtml(colorRgb);
+                    foreach (object selectedItem in drumsList.SelectedItems)
+                    {
+                        string item = selectedItem.ToString().Trim();
+                        item = item.ToLower().Replace(' ', '_');
+                        DrumsColors[item] = ColorTranslator.ToHtml(colorRgb);
+                    }
+                    this.Text = "*CH Color Editor v" + CURRENT_VERSION_STRING;
+                    unsavedChanges = true;
                     break;
                 // Other
                 case 2:
-                    item = otherList.SelectedItem.ToString().Trim();
-                    item = item.ToLower().Replace(' ', '_');
-                    OtherValues[item] = ColorTranslator.ToHtml(colorRgb);
+                    foreach (object selectedItem in otherList.SelectedItems)
+                    {
+                        string item = selectedItem.ToString().Trim();
+                        item = item.ToLower().Replace(' ', '_');
+                        OtherColors[item] = ColorTranslator.ToHtml(colorRgb);
+                    }
+                    this.Text = "*CH Color Editor v" + CURRENT_VERSION_STRING;
+                    unsavedChanges = true;
                     break;
             }
         }
 
         private async void checkForUpdatesBtn_Click(object sender, EventArgs e)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://rileythefox.co.uk/versions/coloreditor.txt");
-            try
-            {
-                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    string newVersionText = await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
+#if DEBUG
+            MessageBox.Show("Cannot check for updates on dev builds.", "CH Color Editor Update Checker");
+            return;
+#else
+            string newVersionText = await IsOutOfDate(true);
 
-                    if (newVersionText == CURRENT_VERSION_STRING)
-                    {
-                        MessageBox.Show("The program is up to date!", "CH Color Editor Update Checker");
-                    }
-                    else
-                    {
-                        if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
-                        {
-                            System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Error checking for updates!\nYou can check manually at https://github.com/rileythefox/chcoloreditor");
-                }
-            }
-            catch (WebException)
+            if(newVersionText != string.Empty)
             {
-                MessageBox.Show("Error checking for updates!\nYou can check manually at https://github.com/rileythefox/chcoloreditor", "CH Color Editor Update Checker");
+                MessageBox.Show("Cannot check for updates on dev builds.", "CH Color Editor Update Checker");
+                if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
+                }
+            } else
+            {
+                MessageBox.Show("The program is up to date!", "CH Color Editor Update Checker");
             }
+#endif
         }
 
         #endregion
@@ -331,7 +367,7 @@ namespace CHColourEditor
                 }
                 // Adds the key to the forms list and the internal dictionary for storing the key and its value
                 guitarList.Items.Add(keyName.ToString());
-                GuitarValues.Add(key.KeyName, key.Value);
+                GuitarColors.Add(key.KeyName, key.Value);
             }
             // Drums List
             for (int i = 0; i < iniData.Sections["drums"].Count; i++)
@@ -346,7 +382,7 @@ namespace CHColourEditor
                     keyName.Append(" ");
                 }
                 drumsList.Items.Add(keyName.ToString());
-                DrumsValues.Add(key.KeyName, key.Value);
+                DrumsColors.Add(key.KeyName, key.Value);
             }
             // Other List
             for (int i = 0; i < iniData.Sections["other"].Count; i++)
@@ -361,22 +397,22 @@ namespace CHColourEditor
                     keyName.Append(" ");
                 }
                 otherList.Items.Add(keyName.ToString());
-                OtherValues.Add(key.KeyName, key.Value);
+                OtherColors.Add(key.KeyName, key.Value);
             }
         }
         private void ResetLists()
         {
-            GuitarValues.Clear();
+            GuitarColors.Clear();
             guitarList.Items.Clear();
-            DrumsValues.Clear();
+            DrumsColors.Clear();
             drumsList.Items.Clear();
-            OtherValues.Clear();
+            OtherColors.Clear();
             otherList.Items.Clear();
         }
 
         #endregion
 
-        #region Tab Control and List Handlers
+        #region Tab Control and List Functions
 
         // These update the visual color corresponding to the list index that is selected
         private void guitarList_SelectedIndexChanged(object sender, EventArgs e)
@@ -385,7 +421,7 @@ namespace CHColourEditor
             item = item.ToLower().Replace(' ', '_');
 
             if(!lockUpdates)
-                UpdateAllColors(ColorTranslator.FromHtml(GuitarValues[item]));
+                UpdateAllColors(ColorTranslator.FromHtml(GuitarColors[item]));
         }
 
         private void drumsList_SelectedIndexChanged(object sender, EventArgs e)
@@ -394,7 +430,7 @@ namespace CHColourEditor
             item = item.ToLower().Replace(' ', '_');
 
             if(!lockUpdates)
-                UpdateAllColors(ColorTranslator.FromHtml(DrumsValues[item]));
+                UpdateAllColors(ColorTranslator.FromHtml(DrumsColors[item]));
         }
 
         private void otherList_SelectedIndexChanged(object sender, EventArgs e)
@@ -403,7 +439,7 @@ namespace CHColourEditor
             item = item.ToLower().Replace(' ', '_');
 
             if(!lockUpdates)
-                UpdateAllColors(ColorTranslator.FromHtml(OtherValues[item]));
+                UpdateAllColors(ColorTranslator.FromHtml(OtherColors[item]));
         }
 
         // If the tab is changed, we want the color to be updated to the index selected in the new tab
@@ -418,41 +454,112 @@ namespace CHColourEditor
                     item = guitarList.SelectedItem.ToString().Trim();
                     item = item.ToLower().Replace(' ', '_');
 
-                    UpdateAllColors(ColorTranslator.FromHtml(GuitarValues[item]));
+                    UpdateAllColors(ColorTranslator.FromHtml(GuitarColors[item]));
                     break;
                 case 1:
                     item = drumsList.SelectedItem.ToString().Trim();
                     item = item.ToLower().Replace(' ', '_');
 
-                    UpdateAllColors(ColorTranslator.FromHtml(DrumsValues[item]));
+                    UpdateAllColors(ColorTranslator.FromHtml(DrumsColors[item]));
                     break;
                 case 2:
                     item = otherList.SelectedItem.ToString().Trim();
                     item = item.ToLower().Replace(' ', '_');
 
-                    UpdateAllColors(ColorTranslator.FromHtml(OtherValues[item]));
+                    UpdateAllColors(ColorTranslator.FromHtml(OtherColors[item]));
                     break;
             }
         }
 
         #endregion
 
-        private string GetCurrentListKey()
+        private List<string> GetCurrentlySelectedKeys()
         {
+            List<string> list = new List<string>();
+
             switch (tabControl1.SelectedIndex)
             {
                 // Guitar
                 case 0:
-                    return guitarList.SelectedItem.ToString().Trim().ToLower().Replace(' ', '_');
+                    foreach (object obj in guitarList.SelectedItems)
+                    {
+                        list.Add(obj.ToString().Trim().ToLower().Replace(' ', '_'));
+                    }
+                    break;
                 // Drums
                 case 1:
-                    return drumsList.SelectedItem.ToString().Trim().ToLower().Replace(' ', '_');
+                    foreach (object obj in drumsList.SelectedItems)
+                    {
+                        list.Add(obj.ToString().Trim().ToLower().Replace(' ', '_'));
+                    }
+                    break;
                 // Other
                 case 2:
-                    return otherList.SelectedItem.ToString().Trim().ToLower().Replace(' ', '_');
-                default:
-                    return string.Empty;
+                    foreach (object obj in otherList.SelectedItems)
+                    {
+                        list.Add(obj.ToString().Trim().ToLower().Replace(' ', '_'));
+                    }
+                    break;
             }
+            return list;
+        }
+
+        private async Task<string> IsOutOfDate(bool button = false)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://rileythefox.co.uk/versions/coloreditor.txt");
+            try
+            {
+                HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string newVersionText = await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
+
+                    if (newVersionText != CURRENT_VERSION_STRING)
+                        return newVersionText;
+                }
+            }
+            catch (WebException)
+            {
+                if (button)
+                    MessageBox.Show("Error checking for updates!\nYou can check manually at https://github.com/rileythefox/chcoloreditor", "CH Color Editor Update Checker");
+            }
+            return string.Empty;
+        }
+
+        private DialogResult OpenSaveDialog()
+        {
+            DialogResult result = saveFileDialog1.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                // File name cannot be empty
+                if (saveFileDialog1.FileName != "")
+                {
+                    // Set the values stored in the Dictionaries to the IniData for saving
+
+                    // Guitar Values
+                    foreach (KeyValuePair<string, string> pair in GuitarColors)
+                    {
+                        iniData.Sections["guitar"][pair.Key] = pair.Value;
+                    }
+                    // Drum Values
+                    foreach (KeyValuePair<string, string> pair in DrumsColors)
+                    {
+                        iniData.Sections["drums"][pair.Key] = pair.Value;
+                    }
+                    // Other Values
+                    foreach (KeyValuePair<string, string> pair in OtherColors)
+                    {
+                        iniData.Sections["other"][pair.Key] = pair.Value;
+                    }
+
+                    var parser = new FileIniDataParser();
+                    parser.WriteFile(saveFileDialog1.FileName, iniData, Encoding.UTF8);
+                    unsavedChanges = false;
+                    this.Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
+                }
+            }
+            return result;
         }
     }
 }

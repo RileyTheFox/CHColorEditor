@@ -21,7 +21,7 @@ namespace CHColourEditor
         public Image OriginalImage { get; private set; }
         public Bitmap BlendedImage { get; private set; }
         public Color CurrentColor { get; private set; }
-        public string CurrentKey { get; private set; }
+        public List<string> CurrentKeys { get; private set; } = new List<string>();
 
         public TexturePreviewManager(PictureBox box)
         {
@@ -62,15 +62,16 @@ namespace CHColourEditor
             } catch (Exception) { }
         }
 
-        public void UpdatePreview(int list, string key, Color color)
+        public void UpdatePreview(int list, List<string> keys, Color color)
         {
             // Don't bother doing anything if the key and the colour are the exact same
-            if (CurrentKey == key && CurrentColor == color)
+            if (CurrentKeys == keys && CurrentColor == color)
                 return;
+
             // Texture has been changed
-            if(CurrentKey != key)
+            if (CurrentKeys != keys)
             {
-                Image newImage = FindSprite(list, key);
+                Image newImage = FindSprite(list, keys[0]);
                 if (newImage == null)
                 {
                     TextureBox.Image = null;
@@ -78,17 +79,18 @@ namespace CHColourEditor
                 }
                 OriginalImage = newImage;
             }
-            CurrentColor = color;
+            if (OriginalImage == null)
+                return;
+
             BlendedImage = ColorSprite(OriginalImage, CurrentColor);
 
+            CurrentKeys = keys;
+            CurrentColor = color;
             TextureBox.Image = BlendedImage;
         }
 
         private Image FindSprite(int list, string key)
         {
-            if (key == CurrentKey)
-                return OriginalImage;
-
             if (SpriteKeys.Textures.ContainsKey($"{list}_{key}"))
                 return SpriteKeys.Textures[$"{list}_{key}"];
 

@@ -33,7 +33,7 @@ namespace CHColourEditor
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
 
             int index = tabControl1.SelectedIndex;
-            string list = GetCurrentListKey();
+            List<string> list = GetCurrentlySelectedKeys();
             // TODO Figure out async stuff so that it doesn't lag out the program or have a bunch of shit queued lol.
             PreviewManager.UpdatePreview(index, list, colorRgb);
         }

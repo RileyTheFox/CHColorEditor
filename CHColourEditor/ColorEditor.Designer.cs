@@ -29,6 +29,7 @@ namespace CHColourEditor
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ColorEditor));
             this.openFileBtn = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.fileOpened = new System.Windows.Forms.Label();
@@ -492,6 +493,7 @@ namespace CHColourEditor
             this.Controls.Add(this.saveBtn);
             this.Controls.Add(this.fileOpened);
             this.Controls.Add(this.openFileBtn);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "ColorEditor";
             this.Text = "Clone Hero Color Editor";
