@@ -532,7 +532,9 @@ namespace CHColourEditor
                 HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    string newVersionText = await new StreamReader(response.GetResponseStream()).ReadToEndAsync();
+                    StreamReader stream = new StreamReader(response.GetResponseStream());
+                    string newVersionText = await stream.ReadToEndAsync();
+                    stream.Close();
 
                     if (newVersionText != CURRENT_VERSION_STRING)
                         return newVersionText;

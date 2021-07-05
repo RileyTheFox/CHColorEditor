@@ -34,6 +34,7 @@ namespace CHColourEditor
             {
                 var sr = new StreamReader("sprites\\sprites.ini");
                 string iniDataString = sr.ReadToEnd();
+                sr.Close();
                 IniData iniData = new IniDataParser().Parse(iniDataString);
 
                 if (!iniData.Sections.ContainsSection("other") || !iniData.Sections.ContainsSection("drums") || !iniData.Sections.ContainsSection("guitar"))
