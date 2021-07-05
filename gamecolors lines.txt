@@ -1,0 +1,61 @@
+The number corresponds to the line number and what value that corresponds to (starting from 0 because for loops)
+
+0 green note
+1 red note
+2 yellow note
+3 blue note
+4 orange note
+5 star power
+6 green flame
+7 red flame
+8 yellow flame
+9 blue flame
+10 orange flame
+11 green lightning
+12 red lightning
+13 yellow lightning
+14 blue lightning
+15 orange lightning
+16 sp bar lower
+17 sp bar upper
+18 sp bar lightning
+19 green strike cover
+20 red strike cover
+21 yellow strike cover
+22 blue strike cover
+23 orange strike cover
+24 green strike head
+25 red strike head
+26 yellow strike head
+27 blue strike head
+28 orange strike head
+29 green strike head light
+30 red strike head light
+31 yellow strike head light
+32 blue strike head light
+33 orange strike head light
+36 multiplier number
+37 multiplier counter
+38 song progress bar
+39 star progress bar
+40 outer star
+41 inner star
+42 star count number
+43 fc indicator
+44 open notes
+45 star power highway
+46 green particles
+47 red particles
+48 yellow particles
+49 blue particles
+50 orange particles
+51 MENU THEME - IGNORE
+particle settings
+score font color
+combo font color
+green strikeline string
+red strikeline string
+yellow strikeline string
+blue strikeline string
+orange strikeline string
+highway sides

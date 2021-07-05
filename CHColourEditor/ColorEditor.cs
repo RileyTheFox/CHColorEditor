@@ -16,6 +16,7 @@ using IniParser.Parser;
 using IniParser;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace CHColourEditor
 {
@@ -53,13 +54,13 @@ namespace CHColourEditor
             // Setup the dialog titles and filters
             openFileDialog1 = new OpenFileDialog()
             {
-                Filter = "Ini file|*.ini",
-                Title = "Open an ini file"
+                Filter = "CH Colors Ini File|*.ini|GameColors Config File|*.cfg",
+                Title = "Open a CH Color Ini File or GameColors Config File"
             };
             saveFileDialog1 = new SaveFileDialog()
             {
-                Filter = "Ini file|*.ini",
-                Title = "Save Color Ini file"
+                Filter = "CH Colors Ini File|*.ini",
+                Title = "Save CH Colors Ini File"
             };
 
             colorRgb = Color.Empty;
@@ -96,20 +97,39 @@ namespace CHColourEditor
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 StreamReader streamReader = null;
+                string iniDataString = "";
 
                 try
                 {
                     // Technically not necessary as the filter prevents this but add it anyways
-                    if(!openFileDialog1.FileName.EndsWith(".ini"))
+                    if(!openFileDialog1.FileName.EndsWith(".ini") && !openFileDialog1.FileName.EndsWith(".cfg"))
                     {
-                        MessageBox.Show("File opened must be an ini file.");
+                        MessageBox.Show("File opened must be a CH Color Ini File or GameColors Config file.");
                         return;
                     }
 
-                    // Read the file and parse it to an IniData object
+                    // Open stream of file
                     streamReader = new StreamReader(openFileDialog1.FileName);
-                    string iniDataString = streamReader.ReadToEnd();
-                    iniData = new IniDataParser().Parse(iniDataString);
+
+                    if (openFileDialog1.FileName.EndsWith(".cfg"))
+                    {
+                        // lol @ having to type resources twice because I put it in a folder to organise
+                        iniDataString = Resources.Resources.DefaultColors;
+                        iniData = new IniDataParser().Parse(iniDataString);
+
+                        if(!GameColors.ConvertGameColors(ref iniData, streamReader.ReadToEnd()))
+                        {
+                            MessageBox.Show("File opened is not a valid GameColors Config file.");
+                            return;
+                        }
+                    } else
+                    {
+                        // Read the file and parse it to an IniData object
+                        iniDataString = streamReader.ReadToEnd();
+                        streamReader.Close();
+
+                        iniData = new IniDataParser().Parse(iniDataString);
+                    }
 
                     // If it doesn't contain these sections it's not a valid CH color file.
                     if (!iniData.Sections.ContainsSection("other") || !iniData.Sections.ContainsSection("drums") || !iniData.Sections.ContainsSection("guitar"))
