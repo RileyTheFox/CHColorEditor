@@ -314,7 +314,6 @@ namespace CHColourEditor
 
             if(newVersionText != string.Empty)
             {
-                MessageBox.Show("Cannot check for updates on dev builds.", "CH Color Editor Update Checker");
                 if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
