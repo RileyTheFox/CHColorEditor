@@ -16,11 +16,6 @@ namespace CHColourEditor
         {
             string[] lines = gameColorsData.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-            if(lines.Length != 62)
-            {
-                return false;
-            }
-
             for(int i = 0; i < lines.Length; i++)
             {
                 // Ignore rainbow lines as these are not possible.
