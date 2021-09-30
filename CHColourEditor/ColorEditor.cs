@@ -42,7 +42,7 @@ namespace CHColourEditor
 
         private HslColor colorHsl = HslColor.FromAhsl(0xff);
         private ColorModes colorMode = ColorModes.Hue;
-        private Color colorRgb;
+        private Color currentColorRgb;
         private bool lockUpdates = false;
 
         public Dictionary<string, string> GuitarColors = new Dictionary<string, string>();
@@ -67,7 +67,7 @@ namespace CHColourEditor
                 Title = "Save CH Colors Ini File"
             };
 
-            colorRgb = Color.Empty;
+            currentColorRgb = Color.Empty;
             PreviewManager = new TexturePreviewManager(texturePreviewImg);
 
             this.Text = TITLE_STRING;
@@ -321,7 +321,7 @@ namespace CHColourEditor
                     {
                         string item = selectedItem.ToString().Trim();
                         item = item.ToLower().Replace(' ', '_');
-                        GuitarColors[item] = ColorTranslator.ToHtml(colorRgb);
+                        GuitarColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
                     this.Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
                     unsavedChanges = true;
@@ -332,7 +332,7 @@ namespace CHColourEditor
                     {
                         string item = selectedItem.ToString().Trim();
                         item = item.ToLower().Replace(' ', '_');
-                        DrumsColors[item] = ColorTranslator.ToHtml(colorRgb);
+                        DrumsColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
                     this.Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
                     unsavedChanges = true;
@@ -343,7 +343,7 @@ namespace CHColourEditor
                     {
                         string item = selectedItem.ToString().Trim();
                         item = item.ToLower().Replace(' ', '_');
-                        OtherColors[item] = ColorTranslator.ToHtml(colorRgb);
+                        OtherColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
                     this.Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
                     unsavedChanges = true;

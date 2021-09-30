@@ -20,7 +20,7 @@ namespace CHColourEditor
             // This function just updates everything color related on the window
 
             this.lockUpdates = true;
-            colorRgb = color;
+            currentColorRgb = color;
             UpdateRgbFields(color);
             this.lockUpdates = true;
             UpdateHslFields(HslColor.FromColor(color));
@@ -28,14 +28,14 @@ namespace CHColourEditor
             UpdateColorFields();
             this.lockUpdates = false;
 
-            labelCurrentColor.BackColor = colorRgb;
-            string colorString = ColorTranslator.ToHtml(colorRgb);
+            labelCurrentColor.BackColor = currentColorRgb;
+            string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
 
             int index = tabControl1.SelectedIndex;
             List<string> list = GetCurrentlySelectedKeys();
             // TODO Figure out async stuff so that it doesn't lag out the program or have a bunch of shit queued lol.
-            PreviewManager.UpdatePreview(index, list, colorRgb);
+            PreviewManager.UpdatePreview(index, list, currentColorRgb);
         }
 
         private void UpdateColorFields()
@@ -43,23 +43,23 @@ namespace CHColourEditor
             // Responsible for the RGB up and down number fields
 
             this.lockUpdates = true;
-            this.numRed.Value = this.colorRgb.R;
-            this.numGreen.Value = this.colorRgb.G;
-            this.numBlue.Value = this.colorRgb.B;
+            this.numRed.Value = this.currentColorRgb.R;
+            this.numGreen.Value = this.currentColorRgb.G;
+            this.numBlue.Value = this.currentColorRgb.B;
             this.numHue.Value = (int)(((decimal)this.colorHsl.H) * 360M);
             this.numSaturation.Value = (int)(((decimal)this.colorHsl.S) * 100M);
             this.numLuminance.Value = (int)(((decimal)this.colorHsl.L) * 100M);
             this.lockUpdates = false;
 
-            labelCurrentColor.BackColor = colorRgb;
-            string colorString = ColorTranslator.ToHtml(colorRgb);
+            labelCurrentColor.BackColor = currentColorRgb;
+            string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
         }
 
         private void UpdateRgbFields(Color newColor)
         {
             this.colorHsl = HslColor.FromColor(newColor);
-            this.colorRgb = newColor;
+            this.currentColorRgb = newColor;
             this.lockUpdates = true;
             this.numHue.Value = (int)(((decimal)this.colorHsl.H) * 360M);
             this.numSaturation.Value = (int)(((decimal)this.colorHsl.S) * 100M);
@@ -68,25 +68,25 @@ namespace CHColourEditor
             this.colorSlider.ColorHSL = this.colorHsl;
             this.colorBox2D.ColorHSL = this.colorHsl;
 
-            labelCurrentColor.BackColor = colorRgb;
-            string colorString = ColorTranslator.ToHtml(colorRgb);
+            labelCurrentColor.BackColor = currentColorRgb;
+            string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
         }
 
         private void UpdateHslFields(HslColor newColor)
         {
             this.colorHsl = newColor;
-            this.colorRgb = newColor.RgbValue;
+            this.currentColorRgb = newColor.RgbValue;
             this.lockUpdates = true;
-            this.numRed.Value = this.colorRgb.R;
-            this.numGreen.Value = this.colorRgb.G;
-            this.numBlue.Value = this.colorRgb.B;
+            this.numRed.Value = this.currentColorRgb.R;
+            this.numGreen.Value = this.currentColorRgb.G;
+            this.numBlue.Value = this.currentColorRgb.B;
             this.lockUpdates = false;
             this.colorSlider.ColorHSL = this.colorHsl;
             this.colorBox2D.ColorHSL = this.colorHsl;
 
-            labelCurrentColor.BackColor = colorRgb;
-            string colorString = ColorTranslator.ToHtml(colorRgb);
+            labelCurrentColor.BackColor = currentColorRgb;
+            string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
         }
 
@@ -100,12 +100,12 @@ namespace CHColourEditor
             {
                 HslColor colorHSL = this.colorSlider.ColorHSL;
                 this.colorHsl = colorHSL;
-                this.colorRgb = this.colorHsl.RgbValue;
+                this.currentColorRgb = this.colorHsl.RgbValue;
                 this.lockUpdates = true;
                 this.colorBox2D.ColorHSL = this.colorHsl;
                 this.lockUpdates = false;
-                labelCurrentColor.BackColor = this.colorRgb;
-                textboxHexColor.Text = ColorTranslator.ToHtml(this.colorRgb);
+                labelCurrentColor.BackColor = this.currentColorRgb;
+                textboxHexColor.Text = ColorTranslator.ToHtml(this.currentColorRgb);
                 UpdateColorFields();
             }
         }
@@ -116,12 +116,12 @@ namespace CHColourEditor
             {
                 HslColor colorHSL = this.colorBox2D.ColorHSL;
                 this.colorHsl = colorHSL;
-                this.colorRgb = this.colorHsl.RgbValue;
+                this.currentColorRgb = this.colorHsl.RgbValue;
                 this.lockUpdates = true;
                 this.colorSlider.ColorHSL = this.colorHsl;
                 this.lockUpdates = false;
-                labelCurrentColor.BackColor = this.colorRgb;
-                textboxHexColor.Text = ColorTranslator.ToHtml(this.colorRgb);
+                labelCurrentColor.BackColor = this.currentColorRgb;
+                textboxHexColor.Text = ColorTranslator.ToHtml(this.currentColorRgb);
                 UpdateColorFields();
             }
         }
