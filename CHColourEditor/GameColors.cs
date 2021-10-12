@@ -26,7 +26,10 @@ namespace CHColourEditor
                 int[] colors = new int[rgbStrings.Length];
                 for(int j = 0; j < colors.Length; j++)
                 {
-                    colors[j] = Convert.ToInt32(Math.Round(Convert.ToDouble(rgbStrings[j])));
+                    try
+                    {
+                        colors[j] = Convert.ToInt32(Math.Round(double.Parse(rgbStrings[j], System.Globalization.CultureInfo.CurrentCulture)));
+                    } catch { goto NEXT_LINE; }
                 }
 
                 Color color = Color.FromArgb(colors[0], colors[1], colors[2]);
@@ -69,24 +72,15 @@ namespace CHColourEditor
                         break;
                     // Not including flames as GameColors allows you to change each fret's flame whereas CH changes it globally.
                     case 6:
-                        continue;
                     case 7:
-                        continue;
                     case 8:
-                        continue;
                     case 9:
-                        continue;
                     case 10:
-                        continue;
                     // Can't change lightning in CH so not included
                     case 11:
-                        continue;
                     case 12:
-                        continue;
                     case 13:
-                        continue;
                     case 14:
-                        continue;
                     case 15:
                         continue;
                     // SP Bar
@@ -148,19 +142,12 @@ namespace CHColourEditor
                         iniData["guitar"]["striker_head_light_orange"] = ColorTranslator.ToHtml(color);
                         break;
                     case 36:
-                        continue;
                     case 37:
-                        continue;
                     case 38:
-                        continue;
                     case 39:
-                        continue;
                     case 40:
-                        continue;
                     case 41:
-                        continue;
                     case 42:
-                        continue;
                     case 43:
                         continue;
                     case 44:
@@ -173,6 +160,8 @@ namespace CHColourEditor
                     // From this point on none of these things can be changed in Clone Hero like you can do in GameColors.
                     // There's things like particles but CH only allows you to globally change particles, not per fret so I'm not including them
                 }
+            NEXT_LINE:
+                continue;
             }
             return true;
         }
