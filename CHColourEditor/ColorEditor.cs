@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -73,6 +73,11 @@ namespace CHColourEditor
             this.Text = TITLE_STRING;
 
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(ColorEditor_OnFormClosing);
+
+#if DEBUG
+            // Don't allow checking for updates on debug builds
+            toolStripMenu_CheckForUpdates.Enabled = false;
+#endif
 
 #if !DEBUG
             // Automatically check for updates
@@ -351,12 +356,8 @@ namespace CHColourEditor
             }
         }
 
-        private void toolStripCheckForUpdates_Click(object sender, EventArgs e)
+        private async void toolStripCheckForUpdates_Click(object sender, EventArgs e)
         {
-#if DEBUG
-            MessageBox.Show("Cannot check for updates on development builds.", "CH Color Editor Update Checker");
-            return;
-#else
             string newVersionText = await IsOutOfDate(true);
 
             if(newVersionText != string.Empty)
@@ -369,7 +370,6 @@ namespace CHColourEditor
             {
                 MessageBox.Show("The program is up to date!", "CH Color Editor Update Checker");
             }
-#endif
         }
 
         #endregion
