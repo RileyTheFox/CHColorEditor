@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,9 @@ namespace CHColourEditor
 
         public static bool ConvertGameColors(ref IniData iniData, string gameColorsData)
         {
+            // Required to account for decimal point differences across various cultures
+            NumberFormatInfo numberFormat = new CultureInfo("").NumberFormat;
+
             string[] lines = gameColorsData.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
             for(int i = 0; i < lines.Length; i++)
@@ -26,10 +30,20 @@ namespace CHColourEditor
                 int[] colors = new int[rgbStrings.Length];
                 for(int j = 0; j < colors.Length; j++)
                 {
-                    try
+                    // Account for cfg files that may use the opposite decimal separator than what is normal for the current culture,
+                    // i.e. , instead of . for regions that use . for decimals, and . instead of , for regions that use , for decimals.
+                    // This could just be set once, but checking every time is more robust towards the
+                    // (albeit unlikely) chance that a cfg has both . and , in different lines.
+                    if(rgbStrings[j].Contains("."))
                     {
-                        colors[j] = Convert.ToInt32(Math.Round(double.Parse(rgbStrings[j], System.Globalization.CultureInfo.CurrentCulture)));
-                    } catch { goto NEXT_LINE; }
+                        numberFormat.NumberDecimalSeparator = ".";
+                    }
+                    else if(rgbStrings[j].Contains(","))
+                    {
+                        numberFormat.NumberDecimalSeparator = ",";
+                    }
+
+                    colors[j] = Convert.ToInt32(Math.Round(Convert.ToDouble(rgbStrings[j], numberFormat)));
                 }
 
                 Color color = Color.FromArgb(colors[0], colors[1], colors[2]);
@@ -160,8 +174,6 @@ namespace CHColourEditor
                     // From this point on none of these things can be changed in Clone Hero like you can do in GameColors.
                     // There's things like particles but CH only allows you to globally change particles, not per fret so I'm not including them
                 }
-            NEXT_LINE:
-                continue;
             }
             return true;
         }
