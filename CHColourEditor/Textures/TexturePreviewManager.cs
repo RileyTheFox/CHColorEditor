@@ -16,8 +16,8 @@ namespace CHColourEditor
     public class TexturePreviewManager
     {
 
-        private SpriteKeys SpriteKeys { get; set; }
-        private PictureBox TextureBox;
+        private SpriteKeys SpriteKeys { get; }
+        private readonly PictureBox TextureBox;
         public Image OriginalImage { get; private set; }
         public Bitmap BlendedImage { get; private set; }
         public Color CurrentColor { get; private set; }
@@ -69,7 +69,7 @@ namespace CHColourEditor
                     if (key.Value != string.Empty || key.Value != " ")
                         SpriteKeys.OtherSprites.Add(key.KeyName, key.Value);
                 }
-            } catch (Exception) { }
+            } catch { }
         }
 
         public void UpdatePreview(int list, List<string> keys, Color color)
