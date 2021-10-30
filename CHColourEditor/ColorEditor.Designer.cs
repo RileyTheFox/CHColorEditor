@@ -63,17 +63,17 @@ namespace CHColourEditor
             this.texturePreviewContainer = new System.Windows.Forms.GroupBox();
             this.texturePreviewImg = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem10 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_FileTab = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_New = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_New_DefaultProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_New_BlankProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_Open = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_HelpTab = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_Changelog = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_CheckForUpdates = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_About = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.editorContainer)).BeginInit();
             this.editorContainer.Panel1.SuspendLayout();
             this.editorContainer.Panel2.SuspendLayout();
@@ -454,8 +454,8 @@ namespace CHColourEditor
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripMenuItem6});
+            this.toolStripMenu_FileTab,
+            this.toolStripMenu_HelpTab});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(3, 1, 0, 1);
@@ -463,89 +463,89 @@ namespace CHColourEditor
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // toolStripMenuItem1
+            // toolStripMenu_FileTab
             // 
-            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4,
-            this.toolStripMenuItem5});
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(37, 22);
-            this.toolStripMenuItem1.Text = "File";
+            this.toolStripMenu_FileTab.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenu_New,
+            this.toolStripMenu_Open,
+            this.toolStripMenu_Save,
+            this.toolStripMenu_SaveAs});
+            this.toolStripMenu_FileTab.Name = "toolStripMenu_FileTab";
+            this.toolStripMenu_FileTab.Size = new System.Drawing.Size(37, 22);
+            this.toolStripMenu_FileTab.Text = "File";
             // 
-            // toolStripMenuItem2
+            // toolStripMenu_New
             // 
-            this.toolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem11,
-            this.toolStripMenuItem10});
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem2.Text = "New";
+            this.toolStripMenu_New.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenu_New_DefaultProfile,
+            this.toolStripMenu_New_BlankProfile});
+            this.toolStripMenu_New.Name = "toolStripMenu_New";
+            this.toolStripMenu_New.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_New.Text = "New";
             // 
-            // toolStripMenuItem11
+            // toolStripMenu_New_DefaultProfile
             // 
-            this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem11.Text = "Default Profile";
-            this.toolStripMenuItem11.Click += new System.EventHandler(this.newDefaultProfileBtn_Click);
+            this.toolStripMenu_New_DefaultProfile.Name = "toolStripMenu_New_DefaultProfile";
+            this.toolStripMenu_New_DefaultProfile.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_New_DefaultProfile.Text = "Default Profile";
+            this.toolStripMenu_New_DefaultProfile.Click += new System.EventHandler(this.toolStripNewDefaultProfileButton_Click);
             // 
-            // toolStripMenuItem10
+            // toolStripMenu_New_BlankProfile
             // 
-            this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem10.Text = "Blank Profile";
-            this.toolStripMenuItem10.Click += new System.EventHandler(this.newBlankProfileBtn_Click);
+            this.toolStripMenu_New_BlankProfile.Name = "toolStripMenu_New_BlankProfile";
+            this.toolStripMenu_New_BlankProfile.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_New_BlankProfile.Text = "Blank Profile";
+            this.toolStripMenu_New_BlankProfile.Click += new System.EventHandler(this.toolStripNewBlankProfileButton_Click);
             // 
-            // toolStripMenuItem3
+            // toolStripMenu_Open
             // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem3.Text = "Open";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripOpenButton_Click);
+            this.toolStripMenu_Open.Name = "toolStripMenu_Open";
+            this.toolStripMenu_Open.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_Open.Text = "Open";
+            this.toolStripMenu_Open.Click += new System.EventHandler(this.toolStripOpenButton_Click);
             // 
-            // toolStripMenuItem4
+            // toolStripMenu_Save
             // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem4.Text = "Save";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripSaveButton_Click);
+            this.toolStripMenu_Save.Name = "toolStripMenu_Save";
+            this.toolStripMenu_Save.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_Save.Text = "Save";
+            this.toolStripMenu_Save.Click += new System.EventHandler(this.toolStripSaveButton_Click);
             // 
-            // toolStripMenuItem5
+            // toolStripMenu_SaveAs
             // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(180, 22);
-            this.toolStripMenuItem5.Text = "Save As";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripSaveAsButton_Click);
+            this.toolStripMenu_SaveAs.Name = "toolStripMenu_SaveAs";
+            this.toolStripMenu_SaveAs.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_SaveAs.Text = "Save As";
+            this.toolStripMenu_SaveAs.Click += new System.EventHandler(this.toolStripSaveAsButton_Click);
             // 
-            // toolStripMenuItem6
+            // toolStripMenu_HelpTab
             // 
-            this.toolStripMenuItem6.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem7,
-            this.toolStripMenuItem8,
-            this.toolStripMenuItem9});
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(44, 22);
-            this.toolStripMenuItem6.Text = "Help";
+            this.toolStripMenu_HelpTab.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenu_Changelog,
+            this.toolStripMenu_CheckForUpdates,
+            this.toolStripMenu_About});
+            this.toolStripMenu_HelpTab.Name = "toolStripMenu_HelpTab";
+            this.toolStripMenu_HelpTab.Size = new System.Drawing.Size(44, 22);
+            this.toolStripMenu_HelpTab.Text = "Help";
             // 
-            // toolStripMenuItem7
+            // toolStripMenu_Changelog
             // 
-            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(171, 22);
-            this.toolStripMenuItem7.Text = "Changelog";
+            this.toolStripMenu_Changelog.Name = "toolStripMenu_Changelog";
+            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(171, 22);
+            this.toolStripMenu_Changelog.Text = "Changelog";
             // 
-            // toolStripMenuItem8
+            // toolStripMenu_CheckForUpdates
             // 
-            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(171, 22);
-            this.toolStripMenuItem8.Text = "Check for Updates";
-            this.toolStripMenuItem8.Click += new System.EventHandler(this.toolStripCheckForUpdates_Click);
+            this.toolStripMenu_CheckForUpdates.Name = "toolStripMenu_CheckForUpdates";
+            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(171, 22);
+            this.toolStripMenu_CheckForUpdates.Text = "Check for Updates";
+            this.toolStripMenu_CheckForUpdates.Click += new System.EventHandler(this.toolStripCheckForUpdates_Click);
             // 
-            // toolStripMenuItem9
+            // toolStripMenu_About
             // 
-            this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(171, 22);
-            this.toolStripMenuItem9.Text = "About";
+            this.toolStripMenu_About.Name = "toolStripMenu_About";
+            this.toolStripMenu_About.Size = new System.Drawing.Size(171, 22);
+            this.toolStripMenu_About.Text = "About";
             // 
             // ColorEditor
             // 
@@ -620,17 +620,17 @@ namespace CHColourEditor
         private System.Windows.Forms.GroupBox texturePreviewContainer;
         private System.Windows.Forms.PictureBox texturePreviewImg;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem7;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem8;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem9;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem11;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem10;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_FileTab;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_New;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_Open;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_Save;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_SaveAs;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_HelpTab;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_Changelog;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_CheckForUpdates;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_About;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_New_DefaultProfile;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_New_BlankProfile;
     }
 }
 

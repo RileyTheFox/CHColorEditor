@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -7,9 +7,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
+
 using MechanikaDesign.WinForms.UI.ColorPicker;
 
 namespace CHColourEditor
@@ -68,6 +70,11 @@ namespace CHColourEditor
 
             FormClosing += ColorEditor_OnFormClosing;
 
+#if DEBUG
+            // Don't allow checking for updates on debug builds
+            toolStripMenu_CheckForUpdates.Enabled = false;
+#endif
+
 #if !DEBUG
             // Automatically check for updates
             Task.Run(() =>
@@ -90,7 +97,7 @@ namespace CHColourEditor
 
         #region File Management
 
-        private void newDefaultProfileBtn_Click(object sender, EventArgs e)
+        private void toolStripNewDefaultProfileButton_Click(object sender, EventArgs e)
         {
             HideEditor();
             string iniDataString = Resources.Resources.DefaultColors;
@@ -106,7 +113,7 @@ namespace CHColourEditor
             Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
         }
 
-        private void newBlankProfileBtn_Click(object sender, EventArgs e)
+        private void toolStripNewBlankProfileButton_Click(object sender, EventArgs e)
         {
             HideEditor();
             string iniDataString = Resources.Resources.DefaultColors;
@@ -204,7 +211,7 @@ namespace CHColourEditor
 
                     // Show the file that has been opened
                     Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
-                    
+
                     streamReader.Close();
                 }
                 catch (Exception ex)
@@ -227,7 +234,7 @@ namespace CHColourEditor
                 MessageBox.Show("No File Opened", TITLE_STRING);
                 return;
             }
-            if(saveFileDialog1.FileName != "")
+            if (saveFileDialog1.FileName != "")
             {
                 // Set the values stored in the Dictionaries to the IniData for saving
 
@@ -256,7 +263,7 @@ namespace CHColourEditor
 
         private void toolStripSaveAsButton_Click(object sender, EventArgs e)
         {
-            if(!isFileOpen)
+            if (!isFileOpen)
             {
                 MessageBox.Show("No File Opened", TITLE_STRING);
                 return;
@@ -314,9 +321,9 @@ namespace CHColourEditor
 
         private void ColorEditor_OnFormClosing(object sender, FormClosingEventArgs e)
         {
-            if(unsavedChanges)
+            if (unsavedChanges)
             {
-                switch(MessageBox.Show("You have unsaved changes! Would you like to save them?", TITLE_STRING, MessageBoxButtons.YesNoCancel))
+                switch (MessageBox.Show("You have unsaved changes! Would you like to save them?", TITLE_STRING, MessageBoxButtons.YesNoCancel))
                 {
                     case DialogResult.Yes:
                         DialogResult result = OpenSaveDialog();
@@ -367,7 +374,7 @@ namespace CHColourEditor
             {
                 // Guitar
                 case 0:
-                    foreach(object selectedItem in guitarList.SelectedItems)
+                    foreach (object selectedItem in guitarList.SelectedItems)
                     {
                         string item = selectedItem.ToString().Trim();
                         item = item.ToLower().Replace(' ', '_');
@@ -401,24 +408,21 @@ namespace CHColourEditor
             }
         }
 
-        private void toolStripCheckForUpdates_Click(object sender, EventArgs e)
+        private async void toolStripCheckForUpdates_Click(object sender, EventArgs e)
         {
-#if DEBUG
-            MessageBox.Show("Cannot check for updates on development builds.", "CH Color Editor Update Checker");
-#else
             string newVersionText = await IsOutOfDate(true);
 
-            if(newVersionText != string.Empty)
+            if (newVersionText != string.Empty)
             {
                 if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
                 }
-            } else
+            }
+            else
             {
                 MessageBox.Show("The program is up to date!", "CH Color Editor Update Checker");
             }
-#endif
         }
 
         #endregion
@@ -535,7 +539,7 @@ namespace CHColourEditor
             string item = guitarList.SelectedItem.ToString().Trim();
             item = item.ToLower().Replace(' ', '_');
 
-            if(!lockUpdates)
+            if (!lockUpdates)
                 UpdateAllColors(ColorTranslator.FromHtml(GuitarColors[item]));
         }
 
@@ -544,7 +548,7 @@ namespace CHColourEditor
             string item = drumsList.SelectedItem.ToString().Trim();
             item = item.ToLower().Replace(' ', '_');
 
-            if(!lockUpdates)
+            if (!lockUpdates)
                 UpdateAllColors(ColorTranslator.FromHtml(DrumsColors[item]));
         }
 
@@ -553,7 +557,7 @@ namespace CHColourEditor
             string item = otherList.SelectedItem.ToString().Trim();
             item = item.ToLower().Replace(' ', '_');
 
-            if(!lockUpdates)
+            if (!lockUpdates)
                 UpdateAllColors(ColorTranslator.FromHtml(OtherColors[item]));
         }
 
@@ -562,7 +566,7 @@ namespace CHColourEditor
         {
             string item;
 
-            switch(tabControl1.SelectedIndex)
+            switch (tabControl1.SelectedIndex)
             {
                 case 0:
                     // When added to the forms list, Windows adds a space to the end of the string which won't match the dictionary key so we have to trim it
