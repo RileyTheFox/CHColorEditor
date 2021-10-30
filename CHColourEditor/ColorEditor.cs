@@ -1,26 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using MechanikaDesign.WinForms.UI.ColorPicker;
-
+using IniParser;
 using IniParser.Model;
 using IniParser.Parser;
-using IniParser;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Reflection;
+using MechanikaDesign.WinForms.UI.ColorPicker;
 
 namespace CHColourEditor
 {
-    public partial class ColorEditor : Form
+    public sealed partial class ColorEditor : Form
     {
 #if DEBUG
         private const string CURRENT_VERSION_STRING = "1.21 DEVELOPMENT BUILD";
@@ -30,12 +24,12 @@ namespace CHColourEditor
 
         private const string TITLE_STRING = "CH Color Editor v" + CURRENT_VERSION_STRING;
 
-        public IniData iniData;
-        private TexturePreviewManager PreviewManager;
+        public IniData IniData;
+        private readonly TexturePreviewManager _previewManager;
 
         #region Variables
-        public bool isFileOpen = false;
-        public bool unsavedChanges = false;
+        public bool isFileOpen;
+        public bool unsavedChanges;
 
         private string CurrentFileName = "";
         private string OldHexTextBoxText = "";
@@ -43,7 +37,7 @@ namespace CHColourEditor
         private HslColor colorHsl = HslColor.FromAhsl(0xff);
         private ColorModes colorMode = ColorModes.Hue;
         private Color currentColorRgb;
-        private bool lockUpdates = false;
+        private bool lockUpdates;
 
         public Dictionary<string, string> GuitarColors = new Dictionary<string, string>();
         public Dictionary<string, string> DrumsColors = new Dictionary<string, string>();
@@ -56,23 +50,23 @@ namespace CHColourEditor
             InitializeComponent();
 
             // Setup the dialog titles and filters
-            openFileDialog1 = new OpenFileDialog()
+            openFileDialog1 = new OpenFileDialog
             {
                 Filter = "CH Colors Ini File|*.ini|GameColors Config File|*.cfg",
                 Title = "Open a CH Color Ini File or GameColors Config File"
             };
-            saveFileDialog1 = new SaveFileDialog()
+            saveFileDialog1 = new SaveFileDialog
             {
                 Filter = "CH Colors Ini File|*.ini",
                 Title = "Save CH Colors Ini File"
             };
 
             currentColorRgb = Color.Empty;
-            PreviewManager = new TexturePreviewManager(texturePreviewImg);
+            _previewManager = new TexturePreviewManager(texturePreviewImg);
 
-            this.Text = TITLE_STRING;
+            Text = TITLE_STRING;
 
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(ColorEditor_OnFormClosing);
+            FormClosing += ColorEditor_OnFormClosing;
 
 #if !DEBUG
             // Automatically check for updates
@@ -96,12 +90,69 @@ namespace CHColourEditor
 
         #region File Management
 
+        private void newDefaultProfileBtn_Click(object sender, EventArgs e)
+        {
+            HideEditor();
+            string iniDataString = Resources.Resources.DefaultColors;
+            IniData = new IniDataParser().Parse(iniDataString);
+
+            SetupEditor();
+            lockUpdates = false;
+
+            // When saving later, default the file name to be the one opened.
+            saveFileDialog1.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
+
+            // Show the file that has been opened
+            Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+        }
+
+        private void newBlankProfileBtn_Click(object sender, EventArgs e)
+        {
+            HideEditor();
+            string iniDataString = Resources.Resources.DefaultColors;
+            IniData = new IniDataParser().Parse(iniDataString);
+
+            // Guitar List
+            for (int i = 0; i < IniData.Sections["guitar"].Count; i++)
+            {
+                KeyData key = IniData.Sections["guitar"].ElementAt(i);
+                key.Value = "#FFFFFF";
+                // Adds the key to the forms list and the internal dictionary for storing the key and its value
+                guitarList.Items.Add(key.KeyName.ToString());
+                GuitarColors.Add(key.KeyName, key.Value);
+            }
+            // Drums List
+            for (int i = 0; i < IniData.Sections["drums"].Count; i++)
+            {
+                KeyData key = IniData.Sections["drums"].ElementAt(i);
+                key.Value = "#FFFFFF";
+                drumsList.Items.Add(key.KeyName.ToString());
+                DrumsColors.Add(key.KeyName, key.Value);
+            }
+            // Other List
+            for (int i = 0; i < IniData.Sections["other"].Count; i++)
+            {
+                KeyData key = IniData.Sections["other"].ElementAt(i);
+                key.Value = "#FFFFFF";
+                otherList.Items.Add(key.KeyName.ToString());
+                OtherColors.Add(key.KeyName, key.Value);
+            }
+
+            SetupEditor();
+            lockUpdates = false;
+
+            // When saving later, default the file name to be the one opened.
+            saveFileDialog1.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
+
+            // Show the file that has been opened
+            Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+        }
+
         private void toolStripOpenButton_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 StreamReader streamReader = null;
-                string iniDataString = "";
 
                 try
                 {
@@ -115,13 +166,14 @@ namespace CHColourEditor
                     // Open stream of file
                     streamReader = new StreamReader(openFileDialog1.FileName);
 
+                    var iniDataString = "";
                     if (openFileDialog1.FileName.EndsWith(".cfg"))
                     {
                         // lol @ having to type resources twice because I put it in a folder to organise
                         iniDataString = Resources.Resources.DefaultColors;
-                        iniData = new IniDataParser().Parse(iniDataString);
+                        IniData = new IniDataParser().Parse(iniDataString);
 
-                        if (!GameColors.ConvertGameColors(ref iniData, streamReader.ReadToEnd()))
+                        if (!GameColors.ConvertGameColors(ref IniData, streamReader.ReadToEnd()))
                         {
                             MessageBox.Show("File opened is not a valid GameColors Config file.", TITLE_STRING);
                             return;
@@ -133,11 +185,11 @@ namespace CHColourEditor
                         iniDataString = streamReader.ReadToEnd();
                         streamReader.Close();
 
-                        iniData = new IniDataParser().Parse(iniDataString);
+                        IniData = new IniDataParser().Parse(iniDataString);
                     }
 
                     // If it doesn't contain these sections it's not a valid CH color file.
-                    if (!iniData.Sections.ContainsSection("other") || !iniData.Sections.ContainsSection("drums") || !iniData.Sections.ContainsSection("guitar"))
+                    if (!IniData.Sections.ContainsSection("other") || !IniData.Sections.ContainsSection("drums") || !IniData.Sections.ContainsSection("guitar"))
                     {
                         MessageBox.Show("File opened is not a valid Clone Hero color ini file.", TITLE_STRING);
                         return;
@@ -151,14 +203,14 @@ namespace CHColourEditor
                     saveFileDialog1.FileName = openFileDialog1.FileName;
 
                     // Show the file that has been opened
-                    this.Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+                    Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
                     
                     streamReader.Close();
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"File could not be opened.\n\nError: {ex.Message}\n\nDetails: {ex.StackTrace}", TITLE_STRING);
-                    this.Text = TITLE_STRING;
+                    Text = TITLE_STRING;
                     HideEditor();
                     if (streamReader != null)
                     {
@@ -182,23 +234,23 @@ namespace CHColourEditor
                 // Guitar Values
                 foreach (KeyValuePair<string, string> pair in GuitarColors)
                 {
-                    iniData.Sections["guitar"][pair.Key] = pair.Value;
+                    IniData.Sections["guitar"][pair.Key] = pair.Value;
                 }
                 // Drum Values
                 foreach (KeyValuePair<string, string> pair in DrumsColors)
                 {
-                    iniData.Sections["drums"][pair.Key] = pair.Value;
+                    IniData.Sections["drums"][pair.Key] = pair.Value;
                 }
                 // Other Values
                 foreach (KeyValuePair<string, string> pair in OtherColors)
                 {
-                    iniData.Sections["other"][pair.Key] = pair.Value;
+                    IniData.Sections["other"][pair.Key] = pair.Value;
                 }
 
                 var parser = new FileIniDataParser();
-                parser.WriteFile(saveFileDialog1.FileName, iniData, Encoding.UTF8);
+                parser.WriteFile(saveFileDialog1.FileName, IniData, Encoding.UTF8);
                 unsavedChanges = false;
-                this.Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+                Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
             }
         }
 
@@ -219,23 +271,23 @@ namespace CHColourEditor
                     // Guitar Values
                     foreach (KeyValuePair<string, string> pair in GuitarColors)
                     {
-                        iniData.Sections["guitar"][pair.Key] = pair.Value;
+                        IniData.Sections["guitar"][pair.Key] = pair.Value;
                     }
                     // Drum Values
                     foreach (KeyValuePair<string, string> pair in DrumsColors)
                     {
-                        iniData.Sections["drums"][pair.Key] = pair.Value;
+                        IniData.Sections["drums"][pair.Key] = pair.Value;
                     }
                     // Other Values
                     foreach (KeyValuePair<string, string> pair in OtherColors)
                     {
-                        iniData.Sections["other"][pair.Key] = pair.Value;
+                        IniData.Sections["other"][pair.Key] = pair.Value;
                     }
 
                     var parser = new FileIniDataParser();
-                    parser.WriteFile(saveFileDialog1.FileName, iniData, Encoding.UTF8);
+                    parser.WriteFile(saveFileDialog1.FileName, IniData, Encoding.UTF8);
                     unsavedChanges = false;
-                    this.Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+                    Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
                 }
             }
         }
@@ -245,13 +297,13 @@ namespace CHColourEditor
         private void ColorEditor_Load(object sender, EventArgs e)
         {
             // no smaller than design time size
-            this.MinimumSize = new Size(this.Width, this.Height);
+            MinimumSize = new Size(Width, Height);
 
             // no larger than screen size
-            this.MaximumSize = new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            MaximumSize = new Size(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
 
-            this.AutoSize = true;
-            this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
             OldHexTextBoxText = "FFFFFF";
 
@@ -303,9 +355,7 @@ namespace CHColourEditor
                     UpdateAllColors(newColor);
                 }
             }
-            catch (Exception)
-            {
-            }
+            catch { }
 
             OldHexTextBoxText = textboxHexColor.Text;
         }
@@ -323,7 +373,7 @@ namespace CHColourEditor
                         item = item.ToLower().Replace(' ', '_');
                         GuitarColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
-                    this.Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
+                    Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
                     unsavedChanges = true;
                     break;
                 // Drums
@@ -334,7 +384,7 @@ namespace CHColourEditor
                         item = item.ToLower().Replace(' ', '_');
                         DrumsColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
-                    this.Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
+                    Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
                     unsavedChanges = true;
                     break;
                 // Other
@@ -345,7 +395,7 @@ namespace CHColourEditor
                         item = item.ToLower().Replace(' ', '_');
                         OtherColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
-                    this.Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
+                    Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
                     unsavedChanges = true;
                     break;
             }
@@ -355,7 +405,6 @@ namespace CHColourEditor
         {
 #if DEBUG
             MessageBox.Show("Cannot check for updates on development builds.", "CH Color Editor Update Checker");
-            return;
 #else
             string newVersionText = await IsOutOfDate(true);
 
@@ -417,9 +466,9 @@ namespace CHColourEditor
         private void AddToLists()
         {
             // Guitar List
-            for (int i = 0; i < iniData.Sections["guitar"].Count; i++)
+            for (int i = 0; i < IniData.Sections["guitar"].Count; i++)
             {
-                KeyData key = iniData.Sections["guitar"].ElementAt(i);
+                KeyData key = IniData.Sections["guitar"].ElementAt(i);
                 StringBuilder keyName = new StringBuilder();
                 // The names in the ini files are all lowercase with _ in between each word which isn't very pretty looking so we change this.
                 // Changes all underscores to spaces.
@@ -436,9 +485,9 @@ namespace CHColourEditor
                 GuitarColors.Add(key.KeyName, key.Value);
             }
             // Drums List
-            for (int i = 0; i < iniData.Sections["drums"].Count; i++)
+            for (int i = 0; i < IniData.Sections["drums"].Count; i++)
             {
-                KeyData key = iniData.Sections["drums"].ElementAt(i);
+                KeyData key = IniData.Sections["drums"].ElementAt(i);
                 StringBuilder keyName = new StringBuilder();
                 string keyNameSpaces = key.KeyName.Replace('_', ' ');
                 foreach (string word in keyNameSpaces.Split(' '))
@@ -451,9 +500,9 @@ namespace CHColourEditor
                 DrumsColors.Add(key.KeyName, key.Value);
             }
             // Other List
-            for (int i = 0; i < iniData.Sections["other"].Count; i++)
+            for (int i = 0; i < IniData.Sections["other"].Count; i++)
             {
-                KeyData key = iniData.Sections["other"].ElementAt(i);
+                KeyData key = IniData.Sections["other"].ElementAt(i);
                 StringBuilder keyName = new StringBuilder();
                 string keyNameSpaces = key.KeyName.Replace('_', ' ');
                 foreach (string word in keyNameSpaces.Split(' '))
@@ -511,7 +560,7 @@ namespace CHColourEditor
         // If the tab is changed, we want the color to be updated to the index selected in the new tab
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string item = "";
+            string item;
 
             switch(tabControl1.SelectedIndex)
             {
@@ -547,24 +596,15 @@ namespace CHColourEditor
             {
                 // Guitar
                 case 0:
-                    foreach (object obj in guitarList.SelectedItems)
-                    {
-                        list.Add(obj.ToString().Trim().ToLower().Replace(' ', '_'));
-                    }
+                    list.AddRange(from object obj in guitarList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
                     break;
                 // Drums
                 case 1:
-                    foreach (object obj in drumsList.SelectedItems)
-                    {
-                        list.Add(obj.ToString().Trim().ToLower().Replace(' ', '_'));
-                    }
+                    list.AddRange(from object obj in drumsList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
                     break;
                 // Other
                 case 2:
-                    foreach (object obj in otherList.SelectedItems)
-                    {
-                        list.Add(obj.ToString().Trim().ToLower().Replace(' ', '_'));
-                    }
+                    list.AddRange(from object obj in otherList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
                     break;
             }
             return list;
@@ -578,7 +618,10 @@ namespace CHColourEditor
                 HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync();
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    StreamReader stream = new StreamReader(response.GetResponseStream());
+                    if (response.GetResponseStream() == null)
+                        return string.Empty;
+
+                    StreamReader stream = new StreamReader(response.GetResponseStream() ?? throw new InvalidOperationException());
                     string newVersionText = await stream.ReadToEndAsync();
                     stream.Close();
 
@@ -608,23 +651,23 @@ namespace CHColourEditor
                     // Guitar Values
                     foreach (KeyValuePair<string, string> pair in GuitarColors)
                     {
-                        iniData.Sections["guitar"][pair.Key] = pair.Value;
+                        IniData.Sections["guitar"][pair.Key] = pair.Value;
                     }
                     // Drum Values
                     foreach (KeyValuePair<string, string> pair in DrumsColors)
                     {
-                        iniData.Sections["drums"][pair.Key] = pair.Value;
+                        IniData.Sections["drums"][pair.Key] = pair.Value;
                     }
                     // Other Values
                     foreach (KeyValuePair<string, string> pair in OtherColors)
                     {
-                        iniData.Sections["other"][pair.Key] = pair.Value;
+                        IniData.Sections["other"][pair.Key] = pair.Value;
                     }
 
                     var parser = new FileIniDataParser();
-                    parser.WriteFile(saveFileDialog1.FileName, iniData, Encoding.UTF8);
+                    parser.WriteFile(saveFileDialog1.FileName, IniData, Encoding.UTF8);
                     unsavedChanges = false;
-                    this.Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
+                    Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
                 }
             }
             return result;

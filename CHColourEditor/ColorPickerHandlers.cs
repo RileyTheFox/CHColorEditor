@@ -10,7 +10,7 @@ using MechanikaDesign.WinForms.UI.ColorPicker;
 
 namespace CHColourEditor
 {
-    public partial class ColorEditor : Form
+    public sealed partial class ColorEditor : Form
     {
 
         #region Update Functions
@@ -35,7 +35,7 @@ namespace CHColourEditor
             int index = tabControl1.SelectedIndex;
             List<string> list = GetCurrentlySelectedKeys();
             // TODO Figure out async stuff so that it doesn't lag out the program or have a bunch of shit queued lol.
-            PreviewManager.UpdatePreview(index, list, currentColorRgb);
+            _previewManager.UpdatePreview(index, list, currentColorRgb);
         }
 
         private void UpdateColorFields()
