@@ -28,6 +28,9 @@
     <Reference Include="ColorPicker">
       <HintPath>..\ColorPickerLibrary\ColorBox2D\bin\Debug\ColorPicker.dll</HintPath>
     </Reference>
+    <Reference Include="SideyUtils">
+      <HintPath>..\SideyUtils\bin\Debug\net5.0\SideyUtils.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />

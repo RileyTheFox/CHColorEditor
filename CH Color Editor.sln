@@ -8,6 +8,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CH Color Editor", "CHColour
 		{6FEB82F6-0FBF-4E12-9D71-43C00398EC02} = {6FEB82F6-0FBF-4E12-9D71-43C00398EC02}
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SideyUtils", "SideyUtils\SideyUtils.csproj", "{6FEB82F6-0FBF-4E12-9D71-43C00398EC02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A093A214-ABF1-4A34-B60B-78925DB66172}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
