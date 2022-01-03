@@ -11,13 +11,16 @@ using System.Windows.Forms;
 using IniParser.Model;
 using IniParser.Parser;
 
+using SideyUtils.Drawing;
+using SideyUtils.Drawing.Blending;
+
 namespace CHColourEditor
 {
     public class TexturePreviewManager
     {
 
-        private SpriteKeys SpriteKeys { get; set; }
-        private PictureBox TextureBox;
+        private SpriteKeys SpriteKeys { get; }
+        private readonly PictureBox TextureBox;
         public Image OriginalImage { get; private set; }
         public Bitmap BlendedImage { get; private set; }
         public Color CurrentColor { get; private set; }
@@ -69,7 +72,7 @@ namespace CHColourEditor
                     if (key.Value != string.Empty || key.Value != " ")
                         SpriteKeys.OtherSprites.Add(key.KeyName, key.Value);
                 }
-            } catch (Exception) { }
+            } catch { }
         }
 
         public void UpdatePreview(int list, List<string> keys, Color color)
@@ -134,7 +137,7 @@ namespace CHColourEditor
                 Image image = Image.FromFile(path);
                 SpriteKeys.Textures.Add($"{list}_{key}", image);
                 return Image.FromFile(path);
-            } catch(Exception)
+            } catch
             {
                 return null;
             }
@@ -144,56 +147,15 @@ namespace CHColourEditor
         // TODO Implement proper asynchronous image manipulation
         private Bitmap ColorSprite(Image sprite, Color color)
         {
-            int width = sprite.Width;
-            int height = sprite.Height;
+            using var src = Floatmap.FromBitmap(new Bitmap(sprite));
 
-            // Load the original sprite
-            Bitmap src = new Bitmap(sprite);
+            var dst = new Floatmap(sprite.Width, sprite.Height);
+            var sg = SideyGraphics.FromFloatmap(dst);
 
-            // Generate a Bitmap of the sprite width and height for coloring
-            Bitmap colorMap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            sg.Draw(src);
+            sg.DrawColor(color, CompositingOrder.Below, BlendMode.Overlay);
 
-            // Apply the selected color to the colorMap sprite
-            using (Graphics gfx = Graphics.FromImage(colorMap))
-            using (SolidBrush brush = new SolidBrush(color))
-            {
-                gfx.FillRectangle(brush, 0, 0, sprite.Width, sprite.Height);
-            }
-
-            // Use LockBitmap for faster performance (Locks bits and uses pointer arithmetic to retrieve pixels)
-            LockBitmap srcLockMap = new LockBitmap(src);
-            LockBitmap colorLockMap = new LockBitmap(colorMap);
-
-            srcLockMap.LockBits();
-            colorLockMap.LockBits();
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    var upperPixel = colorLockMap.GetPixel(x, y);
-                    var lowerPixel = srcLockMap.GetPixel(x, y);
-
-                    // If the alpha is 0 we skip it as this pixel is transparent
-                    if (lowerPixel.A == 0)
-                    {
-                        continue;
-                    }
-
-                    // Calculate the blended colors
-                    var lowerColor = new HSLColor(lowerPixel.R, lowerPixel.G, lowerPixel.B);
-                    var upperColor = new HSLColor(upperPixel.R, upperPixel.G, upperPixel.B) { Luminosity = lowerColor.Luminosity };
-
-                    Color finalColor = Color.FromArgb(lowerPixel.A, ((Color)upperColor).R, ((Color)upperColor).G, ((Color)upperColor).B);
-
-                    srcLockMap.SetPixel(x, y, finalColor);
-                }
-            }
-            // Unlock the bits from memory as we are done with them
-            srcLockMap.UnlockBits();
-            colorLockMap.UnlockBits();
-
-            return src;
+            return (Bitmap)dst;
         }
     }
 }

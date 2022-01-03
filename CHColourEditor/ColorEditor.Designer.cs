@@ -1,7 +1,7 @@
 ﻿
 namespace CHColourEditor
 {
-    partial class ColorEditor
+    sealed partial class ColorEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -65,6 +65,8 @@ namespace CHColourEditor
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenu_FileTab = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenu_New = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_New_DefaultProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenu_New_BlankProfile = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenu_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenu_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenu_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -474,28 +476,45 @@ namespace CHColourEditor
             // 
             // toolStripMenu_New
             // 
+            this.toolStripMenu_New.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenu_New_DefaultProfile,
+            this.toolStripMenu_New_BlankProfile});
             this.toolStripMenu_New.Name = "toolStripMenu_New";
-            this.toolStripMenu_New.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenu_New.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_New.Text = "New";
+            // 
+            // toolStripMenu_New_DefaultProfile
+            // 
+            this.toolStripMenu_New_DefaultProfile.Name = "toolStripMenu_New_DefaultProfile";
+            this.toolStripMenu_New_DefaultProfile.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_New_DefaultProfile.Text = "Default Profile";
+            this.toolStripMenu_New_DefaultProfile.Click += new System.EventHandler(this.toolStripNewDefaultProfileButton_Click);
+            // 
+            // toolStripMenu_New_BlankProfile
+            // 
+            this.toolStripMenu_New_BlankProfile.Name = "toolStripMenu_New_BlankProfile";
+            this.toolStripMenu_New_BlankProfile.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_New_BlankProfile.Text = "Blank Profile";
+            this.toolStripMenu_New_BlankProfile.Click += new System.EventHandler(this.toolStripNewBlankProfileButton_Click);
             // 
             // toolStripMenu_Open
             // 
             this.toolStripMenu_Open.Name = "toolStripMenu_Open";
-            this.toolStripMenu_Open.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenu_Open.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_Open.Text = "Open";
             this.toolStripMenu_Open.Click += new System.EventHandler(this.toolStripOpenButton_Click);
             // 
             // toolStripMenu_Save
             // 
             this.toolStripMenu_Save.Name = "toolStripMenu_Save";
-            this.toolStripMenu_Save.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenu_Save.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_Save.Text = "Save";
             this.toolStripMenu_Save.Click += new System.EventHandler(this.toolStripSaveButton_Click);
             // 
             // toolStripMenu_SaveAs
             // 
             this.toolStripMenu_SaveAs.Name = "toolStripMenu_SaveAs";
-            this.toolStripMenu_SaveAs.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenu_SaveAs.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_SaveAs.Text = "Save As";
             this.toolStripMenu_SaveAs.Click += new System.EventHandler(this.toolStripSaveAsButton_Click);
             // 
@@ -512,20 +531,20 @@ namespace CHColourEditor
             // toolStripMenu_Changelog
             // 
             this.toolStripMenu_Changelog.Name = "toolStripMenu_Changelog";
-            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenu_Changelog.Text = "Changelog";
             // 
             // toolStripMenu_CheckForUpdates
             // 
             this.toolStripMenu_CheckForUpdates.Name = "toolStripMenu_CheckForUpdates";
-            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenu_CheckForUpdates.Text = "Check for Updates";
             this.toolStripMenu_CheckForUpdates.Click += new System.EventHandler(this.toolStripCheckForUpdates_Click);
             // 
             // toolStripMenu_About
             // 
             this.toolStripMenu_About.Name = "toolStripMenu_About";
-            this.toolStripMenu_About.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_About.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenu_About.Text = "About";
             // 
             // ColorEditor
@@ -610,6 +629,8 @@ namespace CHColourEditor
         private System.Windows.Forms.ToolStripMenuItem toolStripMenu_Changelog;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenu_CheckForUpdates;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenu_About;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_New_DefaultProfile;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenu_New_BlankProfile;
     }
 }
 
