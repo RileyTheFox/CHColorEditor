@@ -166,7 +166,7 @@ namespace CHColourEditor
                     // Technically not necessary as the filter prevents this but add it anyways
                     if (!openFileDialog.FileName.EndsWith(".ini") && !openFileDialog.FileName.EndsWith(".cfg"))
                     {
-                        MessageBox.Show("File opened must be a CH Color Ini File or GameColors Config file.", TITLE_STRING);
+                        MessageBox.Show("File opened must be a Clone Hero .ini File or GameColors .cfg file.", TITLE_STRING);
                         return;
                     }
 
@@ -182,7 +182,7 @@ namespace CHColourEditor
 
                         if (!GameColors.ConvertGameColors(ref IniData, streamReader.ReadToEnd()))
                         {
-                            MessageBox.Show("File opened is not a valid GameColors Config file.", TITLE_STRING);
+                            MessageBox.Show("File opened is not a valid GameColors .cfg file.", TITLE_STRING);
                             return;
                         }
                     }
@@ -198,7 +198,7 @@ namespace CHColourEditor
                     // If it doesn't contain these sections it's not a valid CH color file.
                     if (!IniData.Sections.ContainsSection("other") || !IniData.Sections.ContainsSection("drums") || !IniData.Sections.ContainsSection("guitar"))
                     {
-                        MessageBox.Show("File opened is not a valid Clone Hero color ini file.", TITLE_STRING);
+                        MessageBox.Show("File opened is not a valid Clone Hero color .ini file.", TITLE_STRING);
                         return;
                     }
 
@@ -216,7 +216,7 @@ namespace CHColourEditor
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"File could not be opened.\n\nError: {ex.Message}\n\nDetails: {ex.StackTrace}", TITLE_STRING);
+                    MessageBox.Show($"File could not be opened.\n\nError: {ex.Message}\n\nDetails: {ex.StackTrace}", "Error Opening File");
                     Text = TITLE_STRING;
                     HideEditor();
                     if (streamReader != null)
