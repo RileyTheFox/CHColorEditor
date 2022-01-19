@@ -73,9 +73,7 @@ namespace CHColourEditor
 #if DEBUG
             // Don't allow checking for updates on debug builds
             toolStripMenu_CheckForUpdates.Enabled = false;
-#endif
-
-#if !DEBUG
+#else
             // Automatically check for updates
             Task.Run(() =>
             {
