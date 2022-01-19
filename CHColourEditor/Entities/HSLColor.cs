@@ -22,7 +22,8 @@ namespace CHColourEditor
             }
             set
             {
-                hue = CheckRange(value / scale);
+                // Loop around instead of clamping
+                hue = (value % scale) / scale;
             }
         }
 
@@ -52,11 +53,12 @@ namespace CHColourEditor
 
         private static double CheckRange(double value)
         {
-            if (value < 0.0)
-                value = 0.0;
-            else if (value > 1.0)
-                value = 1.0;
-            return value;
+            if (value == Double.NaN)
+            {
+                value = 0;
+            }
+
+            return Math.Clamp(value, 0.0, 1.0);
         }
 
 #pragma warning disable CA1305
