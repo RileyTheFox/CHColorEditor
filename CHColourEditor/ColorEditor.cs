@@ -168,11 +168,14 @@ namespace CHColourEditor
                         return;
                     }
 
+                    // Store current file path
+                    CurrentFileName = openFileDialog.FileName;
+
                     // Open stream of file
-                    streamReader = new StreamReader(openFileDialog.FileName);
+                    streamReader = new StreamReader(CurrentFileName);
 
                     var iniDataString = "";
-                    if (openFileDialog.FileName.EndsWith(".cfg"))
+                    if (CurrentFileName.EndsWith(".cfg"))
                     {
                         // lol @ having to type resources twice because I put it in a folder to organise
                         iniDataString = Resources.Resources.DefaultColors;
@@ -205,10 +208,10 @@ namespace CHColourEditor
                     lockUpdates = false;
 
                     // When saving later, default the file name to be the one opened.
-                    saveFileDialog.FileName = openFileDialog.FileName;
+                    saveFileDialog.FileName = CurrentFileName;
 
                     // Show the file that has been opened
-                    Text = TITLE_STRING + " - " + saveFileDialog.FileName;
+                    Text = TITLE_STRING + " - " + CurrentFileName;
 
                     streamReader.Close();
                 }
