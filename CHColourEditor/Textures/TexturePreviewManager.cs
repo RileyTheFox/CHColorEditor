@@ -157,7 +157,7 @@ namespace CHColourEditor
             var sg = SideyGraphics.FromFloatmap(dst);
 
             sg.Draw(src);
-            sg.DrawColor(color, CompositingOrder.Below, BlendMode.Overlay);
+            sg.DrawColor(color, CompositingOrder.Below, BlendMode.Multiply);
 
             return (Bitmap)dst;
         }
