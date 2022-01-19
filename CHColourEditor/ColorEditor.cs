@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -54,13 +54,13 @@ namespace CHColourEditor
             // Setup the dialog titles and filters
             openFileDialog = new OpenFileDialog
             {
-                Filter = "CH Colors Ini File|*.ini|GameColors Config File|*.cfg",
-                Title = "Open a CH Color Ini File or GameColors Config File"
+                Filter = "All supported files|*.ini;*.cfg|Clone Hero .ini file|*.ini|GameColors .cfg file|*.cfg",
+                Title = "Open a Clone Hero .ini file or GameColors .cfg file"
             };
             saveFileDialog = new SaveFileDialog
             {
-                Filter = "CH Colors Ini File|*.ini",
-                Title = "Save CH Colors Ini File"
+                Filter = "Clone Hero .ini file|*.ini",
+                Title = "Save a Clone Hero .ini file"
             };
 
             currentColorRgb = Color.Empty;
