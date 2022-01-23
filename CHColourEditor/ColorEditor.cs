@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -52,15 +52,15 @@ namespace CHColourEditor
             InitializeComponent();
 
             // Setup the dialog titles and filters
-            openFileDialog1 = new OpenFileDialog
+            openFileDialog = new OpenFileDialog
             {
-                Filter = "CH Colors Ini File|*.ini|GameColors Config File|*.cfg",
-                Title = "Open a CH Color Ini File or GameColors Config File"
+                Filter = "All supported files|*.ini;*.cfg|Clone Hero .ini file|*.ini|GameColors .cfg file|*.cfg",
+                Title = "Open a Clone Hero .ini file or GameColors .cfg file"
             };
-            saveFileDialog1 = new SaveFileDialog
+            saveFileDialog = new SaveFileDialog
             {
-                Filter = "CH Colors Ini File|*.ini",
-                Title = "Save CH Colors Ini File"
+                Filter = "Clone Hero .ini file|*.ini",
+                Title = "Save a Clone Hero .ini file"
             };
 
             currentColorRgb = Color.Empty;
@@ -73,9 +73,7 @@ namespace CHColourEditor
 #if DEBUG
             // Don't allow checking for updates on debug builds
             toolStripMenu_CheckForUpdates.Enabled = false;
-#endif
-
-#if !DEBUG
+#else
             // Automatically check for updates
             Task.Run(() =>
             {
@@ -107,10 +105,10 @@ namespace CHColourEditor
             lockUpdates = false;
 
             // When saving later, default the file name to be the one opened.
-            saveFileDialog1.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
+            saveFileDialog.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
 
             // Show the file that has been opened
-            Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+            Text = TITLE_STRING + " - " + saveFileDialog.FileName;
         }
 
         private void toolStripNewBlankProfileButton_Click(object sender, EventArgs e)
@@ -149,32 +147,35 @@ namespace CHColourEditor
             lockUpdates = false;
 
             // When saving later, default the file name to be the one opened.
-            saveFileDialog1.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
+            saveFileDialog.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
 
             // Show the file that has been opened
-            Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+            Text = TITLE_STRING + " - " + saveFileDialog.FileName;
         }
 
         private void toolStripOpenButton_Click(object sender, EventArgs e)
         {
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 StreamReader streamReader = null;
 
                 try
                 {
                     // Technically not necessary as the filter prevents this but add it anyways
-                    if (!openFileDialog1.FileName.EndsWith(".ini") && !openFileDialog1.FileName.EndsWith(".cfg"))
+                    if (!openFileDialog.FileName.EndsWith(".ini") && !openFileDialog.FileName.EndsWith(".cfg"))
                     {
-                        MessageBox.Show("File opened must be a CH Color Ini File or GameColors Config file.", TITLE_STRING);
+                        MessageBox.Show("File opened must be a Clone Hero .ini File or GameColors .cfg file.", TITLE_STRING);
                         return;
                     }
 
+                    // Store current file path
+                    CurrentFileName = openFileDialog.FileName;
+
                     // Open stream of file
-                    streamReader = new StreamReader(openFileDialog1.FileName);
+                    streamReader = new StreamReader(CurrentFileName);
 
                     var iniDataString = "";
-                    if (openFileDialog1.FileName.EndsWith(".cfg"))
+                    if (CurrentFileName.EndsWith(".cfg"))
                     {
                         // lol @ having to type resources twice because I put it in a folder to organise
                         iniDataString = Resources.Resources.DefaultColors;
@@ -182,7 +183,7 @@ namespace CHColourEditor
 
                         if (!GameColors.ConvertGameColors(ref IniData, streamReader.ReadToEnd()))
                         {
-                            MessageBox.Show("File opened is not a valid GameColors Config file.", TITLE_STRING);
+                            MessageBox.Show("File opened is not a valid GameColors .cfg file.", TITLE_STRING);
                             return;
                         }
                     }
@@ -198,7 +199,7 @@ namespace CHColourEditor
                     // If it doesn't contain these sections it's not a valid CH color file.
                     if (!IniData.Sections.ContainsSection("other") || !IniData.Sections.ContainsSection("drums") || !IniData.Sections.ContainsSection("guitar"))
                     {
-                        MessageBox.Show("File opened is not a valid Clone Hero color ini file.", TITLE_STRING);
+                        MessageBox.Show("File opened is not a valid Clone Hero color .ini file.", TITLE_STRING);
                         return;
                     }
 
@@ -207,16 +208,16 @@ namespace CHColourEditor
                     lockUpdates = false;
 
                     // When saving later, default the file name to be the one opened.
-                    saveFileDialog1.FileName = openFileDialog1.FileName;
+                    saveFileDialog.FileName = CurrentFileName;
 
                     // Show the file that has been opened
-                    Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+                    Text = TITLE_STRING + " - " + CurrentFileName;
 
                     streamReader.Close();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"File could not be opened.\n\nError: {ex.Message}\n\nDetails: {ex.StackTrace}", TITLE_STRING);
+                    MessageBox.Show($"File could not be opened.\n\nError: {ex.Message}\n\nDetails: {ex.StackTrace}", "Error Opening File");
                     Text = TITLE_STRING;
                     HideEditor();
                     if (streamReader != null)
@@ -234,7 +235,7 @@ namespace CHColourEditor
                 MessageBox.Show("No File Opened", TITLE_STRING);
                 return;
             }
-            if (saveFileDialog1.FileName != "")
+            if (saveFileDialog.FileName != "")
             {
                 // Set the values stored in the Dictionaries to the IniData for saving
 
@@ -255,9 +256,9 @@ namespace CHColourEditor
                 }
 
                 var parser = new FileIniDataParser();
-                parser.WriteFile(saveFileDialog1.FileName, IniData, Encoding.UTF8);
+                parser.WriteFile(saveFileDialog.FileName, IniData, Encoding.UTF8);
                 unsavedChanges = false;
-                Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+                Text = TITLE_STRING + " - " + saveFileDialog.FileName;
             }
         }
 
@@ -268,10 +269,10 @@ namespace CHColourEditor
                 MessageBox.Show("No File Opened", TITLE_STRING);
                 return;
             }
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 // File name cannot be empty
-                if (saveFileDialog1.FileName != "")
+                if (saveFileDialog.FileName != "")
                 {
                     // Set the values stored in the Dictionaries to the IniData for saving
 
@@ -292,9 +293,9 @@ namespace CHColourEditor
                     }
 
                     var parser = new FileIniDataParser();
-                    parser.WriteFile(saveFileDialog1.FileName, IniData, Encoding.UTF8);
+                    parser.WriteFile(saveFileDialog.FileName, IniData, Encoding.UTF8);
                     unsavedChanges = false;
-                    Text = TITLE_STRING + " - " + saveFileDialog1.FileName;
+                    Text = TITLE_STRING + " - " + saveFileDialog.FileName;
                 }
             }
         }
@@ -370,7 +371,7 @@ namespace CHColourEditor
         // Updates the color value of the selected item to the one in the color picker
         private void updateColorBtn_Click(object sender, EventArgs e)
         {
-            switch (tabControl1.SelectedIndex)
+            switch (tabControl_Sections.SelectedIndex)
             {
                 // Guitar
                 case 0:
@@ -380,7 +381,7 @@ namespace CHColourEditor
                         item = item.ToLower().Replace(' ', '_');
                         GuitarColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
-                    Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
+                    Text = $"*{TITLE_STRING} - {saveFileDialog.FileName}";
                     unsavedChanges = true;
                     break;
                 // Drums
@@ -391,7 +392,7 @@ namespace CHColourEditor
                         item = item.ToLower().Replace(' ', '_');
                         DrumsColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
-                    Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
+                    Text = $"*{TITLE_STRING} - {saveFileDialog.FileName}";
                     unsavedChanges = true;
                     break;
                 // Other
@@ -402,7 +403,7 @@ namespace CHColourEditor
                         item = item.ToLower().Replace(' ', '_');
                         OtherColors[item] = ColorTranslator.ToHtml(currentColorRgb);
                     }
-                    Text = $"*{TITLE_STRING} - {saveFileDialog1.FileName}";
+                    Text = $"*{TITLE_STRING} - {saveFileDialog.FileName}";
                     unsavedChanges = true;
                     break;
             }
@@ -436,7 +437,7 @@ namespace CHColourEditor
             AddToLists();
 
             // Make it so the guitar tab is the default selection
-            tabControl1.SelectedIndex = 0;
+            tabControl_Sections.SelectedIndex = 0;
 
             // Make the selected item on each list the first one
             guitarList.SelectedIndex = 0; // We have to do guitar twice to initialise it or else it will crash because of the event handlers.
@@ -566,7 +567,7 @@ namespace CHColourEditor
         {
             string item;
 
-            switch (tabControl1.SelectedIndex)
+            switch (tabControl_Sections.SelectedIndex)
             {
                 case 0:
                     // When added to the forms list, Windows adds a space to the end of the string which won't match the dictionary key so we have to trim it
@@ -596,7 +597,7 @@ namespace CHColourEditor
         {
             List<string> list = new List<string>();
 
-            switch (tabControl1.SelectedIndex)
+            switch (tabControl_Sections.SelectedIndex)
             {
                 // Guitar
                 case 0:
@@ -643,12 +644,12 @@ namespace CHColourEditor
 
         private DialogResult OpenSaveDialog()
         {
-            DialogResult result = saveFileDialog1.ShowDialog();
+            DialogResult result = saveFileDialog.ShowDialog();
 
             if (result == DialogResult.OK)
             {
                 // File name cannot be empty
-                if (saveFileDialog1.FileName != "")
+                if (saveFileDialog.FileName != "")
                 {
                     // Set the values stored in the Dictionaries to the IniData for saving
 
@@ -669,7 +670,7 @@ namespace CHColourEditor
                     }
 
                     var parser = new FileIniDataParser();
-                    parser.WriteFile(saveFileDialog1.FileName, IniData, Encoding.UTF8);
+                    parser.WriteFile(saveFileDialog.FileName, IniData, Encoding.UTF8);
                     unsavedChanges = false;
                     Text = "CH Color Editor v" + CURRENT_VERSION_STRING;
                 }

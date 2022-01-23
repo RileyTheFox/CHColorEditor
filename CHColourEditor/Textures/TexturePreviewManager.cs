@@ -134,9 +134,13 @@ namespace CHColourEditor
             // Attempt to load the Image from the file and add it to the sprite keys
             try
             {
-                Image image = Image.FromFile(path);
-                SpriteKeys.Textures.Add($"{list}_{key}", image);
-                return Image.FromFile(path);
+                if (File.Exists(path))
+                {
+                    Image image = Image.FromFile(path);
+                    SpriteKeys.Textures.Add($"{list}_{key}", image);
+                    return Image.FromFile(path);
+                }
+                else return null;
             } catch
             {
                 return null;
@@ -153,7 +157,7 @@ namespace CHColourEditor
             var sg = SideyGraphics.FromFloatmap(dst);
 
             sg.Draw(src);
-            sg.DrawColor(color, CompositingOrder.Below, BlendMode.Overlay);
+            sg.DrawColor(color, CompositingOrder.Below, BlendMode.Multiply);
 
             return (Bitmap)dst;
         }

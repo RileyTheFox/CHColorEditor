@@ -28,11 +28,11 @@ namespace CHColourEditor
             UpdateColorFields();
             this.lockUpdates = false;
 
-            labelCurrentColor.BackColor = currentColorRgb;
+            textboxCurrentColor.BackColor = currentColorRgb;
             string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
 
-            int index = tabControl1.SelectedIndex;
+            int index = tabControl_Sections.SelectedIndex;
             List<string> list = GetCurrentlySelectedKeys();
             // TODO Figure out async stuff so that it doesn't lag out the program or have a bunch of shit queued lol.
             _previewManager.UpdatePreview(index, list, currentColorRgb);
@@ -51,7 +51,7 @@ namespace CHColourEditor
             this.numLuminance.Value = (int)(((decimal)this.colorHsl.L) * 100M);
             this.lockUpdates = false;
 
-            labelCurrentColor.BackColor = currentColorRgb;
+            textboxCurrentColor.BackColor = currentColorRgb;
             string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
         }
@@ -68,7 +68,7 @@ namespace CHColourEditor
             this.colorSlider.ColorHSL = this.colorHsl;
             this.colorBox2D.ColorHSL = this.colorHsl;
 
-            labelCurrentColor.BackColor = currentColorRgb;
+            textboxCurrentColor.BackColor = currentColorRgb;
             string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
         }
@@ -85,7 +85,7 @@ namespace CHColourEditor
             this.colorSlider.ColorHSL = this.colorHsl;
             this.colorBox2D.ColorHSL = this.colorHsl;
 
-            labelCurrentColor.BackColor = currentColorRgb;
+            textboxCurrentColor.BackColor = currentColorRgb;
             string colorString = ColorTranslator.ToHtml(currentColorRgb);
             textboxHexColor.Text = colorString.Substring(1, colorString.Length - 1);
         }
@@ -104,7 +104,7 @@ namespace CHColourEditor
                 this.lockUpdates = true;
                 this.colorBox2D.ColorHSL = this.colorHsl;
                 this.lockUpdates = false;
-                labelCurrentColor.BackColor = this.currentColorRgb;
+                textboxCurrentColor.BackColor = this.currentColorRgb;
                 textboxHexColor.Text = ColorTranslator.ToHtml(this.currentColorRgb);
                 UpdateColorFields();
             }
@@ -120,7 +120,7 @@ namespace CHColourEditor
                 this.lockUpdates = true;
                 this.colorSlider.ColorHSL = this.colorHsl;
                 this.lockUpdates = false;
-                labelCurrentColor.BackColor = this.currentColorRgb;
+                textboxCurrentColor.BackColor = this.currentColorRgb;
                 textboxHexColor.Text = ColorTranslator.ToHtml(this.currentColorRgb);
                 UpdateColorFields();
             }

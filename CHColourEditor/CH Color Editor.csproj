@@ -25,12 +25,8 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="ColorPicker">
-      <HintPath>..\ColorPickerLibrary\ColorBox2D\bin\Debug\ColorPicker.dll</HintPath>
-    </Reference>
-    <Reference Include="SideyUtils">
-      <HintPath>..\SideyUtils\bin\Debug\net5.0\SideyUtils.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\ColorPickerLibrary\ColorBox2D\ColorPicker.csproj" />
+    <ProjectReference Include="..\SideyUtils\SideyUtils.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />

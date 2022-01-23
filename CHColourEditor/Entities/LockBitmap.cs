@@ -63,9 +63,9 @@ namespace CHColourEditor
                 // Copy data from pointer to array
                 Marshal.Copy(Iptr, Pixels, 0, Pixels.Length);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -82,9 +82,9 @@ namespace CHColourEditor
                 // Unlock bitmap data
                 source.UnlockBits(bitmapData);
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
