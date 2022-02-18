@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -71,8 +72,9 @@ namespace CHColourEditor
             FormClosing += ColorEditor_OnFormClosing;
 
 #if DEBUG
-            // Don't allow checking for updates on debug builds
+            // Don't allow checking for updates or changelog on debug builds
             toolStripMenu_CheckForUpdates.Enabled = false;
+            toolStripMenu_Changelog.Enabled = false;
 #else
             // Automatically check for updates
             Task.Run(() =>
@@ -80,7 +82,7 @@ namespace CHColourEditor
                 string newVersionText = IsOutOfDate().Result;
 
                 // If it's empty then there is no update available
-                if(newVersionText != string.Empty)
+                if (newVersionText != string.Empty)
                 {
                     if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
@@ -105,7 +107,7 @@ namespace CHColourEditor
             lockUpdates = false;
 
             // When saving later, default the file name to be the one opened.
-            saveFileDialog.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
+            saveFileDialog.FileName = "untitled.ini";
 
             // Show the file that has been opened
             Text = TITLE_STRING + " - " + saveFileDialog.FileName;
@@ -147,7 +149,7 @@ namespace CHColourEditor
             lockUpdates = false;
 
             // When saving later, default the file name to be the one opened.
-            saveFileDialog.FileName = Directory.GetCurrentDirectory() + "\\untitled.ini";
+            saveFileDialog.FileName = "blank.ini";
 
             // Show the file that has been opened
             Text = TITLE_STRING + " - " + saveFileDialog.FileName;
@@ -208,10 +210,10 @@ namespace CHColourEditor
                     lockUpdates = false;
 
                     // When saving later, default the file name to be the one opened.
-                    saveFileDialog.FileName = CurrentFileName;
+                    saveFileDialog.FileName = CurrentFileName.Split('\\')[^1];
 
                     // Show the file that has been opened
-                    Text = TITLE_STRING + " - " + CurrentFileName;
+                    Text = TITLE_STRING + " - " + CurrentFileName.Split('\\')[^1];
 
                     streamReader.Close();
                 }
@@ -294,6 +296,7 @@ namespace CHColourEditor
 
                     var parser = new FileIniDataParser();
                     parser.WriteFile(saveFileDialog.FileName, IniData, Encoding.UTF8);
+                    saveFileDialog.FileName = saveFileDialog.FileName.Split('\\')[^1];
                     unsavedChanges = false;
                     Text = TITLE_STRING + " - " + saveFileDialog.FileName;
                 }
@@ -409,6 +412,15 @@ namespace CHColourEditor
             }
         }
 
+        private void toolStripMenu_Changelog_Click(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo()
+            {
+                UseShellExecute = true,
+                FileName = "https://github.com/rileythefox/chcoloreditor/releases/tag/v" + CURRENT_VERSION_STRING,
+            });
+        }
+
         private async void toolStripCheckForUpdates_Click(object sender, EventArgs e)
         {
             string newVersionText = await IsOutOfDate(true);
@@ -417,13 +429,26 @@ namespace CHColourEditor
             {
                 if (MessageBox.Show($"CH Color Editor is out of date!\nCurrent version: {CURRENT_VERSION_STRING}. Latest version: {newVersionText}\nWould you like to open the update page?", "CH Color Editor Update Checker", buttons: MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    System.Diagnostics.Process.Start("https://github.com/rileythefox/chcoloreditor");
+                    Process.Start(new ProcessStartInfo()
+                    {
+                        UseShellExecute = true,
+                        FileName = "https://github.com/rileythefox/chcoloreditor",
+                    });
                 }
             }
             else
             {
                 MessageBox.Show("The program is up to date!", "CH Color Editor Update Checker");
             }
+        }
+
+        private void toolStripAbout_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"{TITLE_STRING}\n" +
+                $"Created by RileyTheFox" +
+                "\n\nSpecial thanks to:" +
+                "\n- TheNathannator,\n   for helping with GameColor .cfg conversion\n   and sprite previewing.",
+                "About CH Color Editor");
         }
 
         #endregion
@@ -447,8 +472,8 @@ namespace CHColourEditor
             guitarList.SelectedIndex = 0;
 
             // Reveal the editor
-            editorContainer.Visible = true;
             editorContainer.Enabled = true;
+            editorContainer.Visible = true;
 
             isFileOpen = true;
 

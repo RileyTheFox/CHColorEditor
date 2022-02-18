@@ -596,21 +596,23 @@ namespace CHColourEditor
             // toolStripMenu_Changelog
             // 
             this.toolStripMenu_Changelog.Name = "toolStripMenu_Changelog";
-            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(171, 22);
+            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_Changelog.Text = "Changelog";
+            this.toolStripMenu_Changelog.Click += new System.EventHandler(this.toolStripMenu_Changelog_Click);
             // 
             // toolStripMenu_CheckForUpdates
             // 
             this.toolStripMenu_CheckForUpdates.Name = "toolStripMenu_CheckForUpdates";
-            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(171, 22);
+            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_CheckForUpdates.Text = "Check for Updates";
             this.toolStripMenu_CheckForUpdates.Click += new System.EventHandler(this.toolStripCheckForUpdates_Click);
             // 
             // toolStripMenu_About
             // 
             this.toolStripMenu_About.Name = "toolStripMenu_About";
-            this.toolStripMenu_About.Size = new System.Drawing.Size(171, 22);
+            this.toolStripMenu_About.Size = new System.Drawing.Size(180, 22);
             this.toolStripMenu_About.Text = "About";
+            this.toolStripMenu_About.Click += new System.EventHandler(this.toolStripAbout_Click);
             // 
             // ColorEditor
             // 
