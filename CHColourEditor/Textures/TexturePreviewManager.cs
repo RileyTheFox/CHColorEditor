@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using IniParser.Model;
@@ -61,7 +57,7 @@ namespace CHColourEditor
                 for (int i = 0; i < iniData.Sections["drums"].Count; i++)
                 {
                     KeyData key = iniData.Sections["drums"].ElementAt(i);
-                    if(key.Value != string.Empty || key.Value != " ")
+                    if (key.Value != string.Empty || key.Value != " ")
                         SpriteKeys.DrumSprites.Add(key.KeyName, key.Value);
                 }
 
@@ -72,7 +68,8 @@ namespace CHColourEditor
                     if (key.Value != string.Empty || key.Value != " ")
                         SpriteKeys.OtherSprites.Add(key.KeyName, key.Value);
                 }
-            } catch { }
+            }
+            catch { }
         }
 
         public void UpdatePreview(int list, List<string> keys, Color color)
@@ -115,18 +112,18 @@ namespace CHColourEditor
             string path = "sprites\\";
 
             // Setup the subfolder by looking at the key name and the current list (guitar, drums, other)
-            switch(list)
+            switch (list)
             {
                 case 0:
-                    if(SpriteKeys.GuitarSprites.ContainsKey(key))
+                    if (SpriteKeys.GuitarSprites.ContainsKey(key))
                         path += "guitar\\" + SpriteKeys.GuitarSprites[key];
                     break;
                 case 1:
-                    if(SpriteKeys.DrumSprites.ContainsKey(key))
+                    if (SpriteKeys.DrumSprites.ContainsKey(key))
                         path += "drums\\" + SpriteKeys.DrumSprites[key];
                     break;
                 case 2:
-                    if(SpriteKeys.OtherSprites.ContainsKey(key))
+                    if (SpriteKeys.OtherSprites.ContainsKey(key))
                         path += "other\\" + SpriteKeys.OtherSprites[key];
                     break;
             }
@@ -141,7 +138,8 @@ namespace CHColourEditor
                     return Image.FromFile(path);
                 }
                 else return null;
-            } catch
+            }
+            catch
             {
                 return null;
             }

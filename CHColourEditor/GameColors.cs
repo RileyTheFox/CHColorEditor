@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using IniParser.Model;
 
@@ -20,7 +16,7 @@ namespace CHColourEditor
 
             string[] lines = gameColorsData.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-            for(int i = 0; i < lines.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 // Ignore rainbow lines as these are not possible.
                 if (lines[i] == "RB" || lines[i] == "empty" || lines[i] == string.Empty)
@@ -28,17 +24,17 @@ namespace CHColourEditor
 
                 string[] rgbStrings = lines[i].Split('|');
                 int[] colors = new int[rgbStrings.Length];
-                for(int j = 0; j < colors.Length; j++)
+                for (int j = 0; j < colors.Length; j++)
                 {
                     // Account for cfg files that may use the opposite decimal separator than what is normal for the current culture,
                     // i.e. , instead of . for regions that use . for decimals, and . instead of , for regions that use , for decimals.
                     // This could just be set once, but checking every time is more robust towards the
                     // (albeit unlikely) chance that a cfg has both . and , in different lines.
-                    if(rgbStrings[j].Contains("."))
+                    if (rgbStrings[j].Contains("."))
                     {
                         numberFormat.NumberDecimalSeparator = ".";
                     }
-                    else if(rgbStrings[j].Contains(","))
+                    else if (rgbStrings[j].Contains(","))
                     {
                         numberFormat.NumberDecimalSeparator = ",";
                     }
@@ -50,7 +46,7 @@ namespace CHColourEditor
                 // A brighter version of the current color to be used for things such as the note shine animation
                 HSLColor color_highlight;
 
-                switch(i)
+                switch (i)
                 {
                     // Notes/Sustains
                     // Green
@@ -287,7 +283,7 @@ namespace CHColourEditor
                         iniData["guitar"]["note_open"] = ColorTranslator.ToHtml(color);
                         iniData["guitar"]["note_anim_open"] = ColorTranslator.ToHtml(color_highlight);
                         iniData["guitar"]["sustain_open"] = ColorTranslator.ToHtml(color);
-                        iniData["other"] ["striker_hit_flame_open"] = ColorTranslator.ToHtml(color);
+                        iniData["other"]["striker_hit_flame_open"] = ColorTranslator.ToHtml(color);
                         break;
 
                     // SP Activation
