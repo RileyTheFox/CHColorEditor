@@ -20,9 +20,9 @@ namespace CHColourEditor
     public sealed partial class ColorEditor : Form
     {
 #if DEBUG
-        private const string CURRENT_VERSION_STRING = "1.21 DEVELOPMENT BUILD";
+        private const string CURRENT_VERSION_STRING = "1.3 DEVELOPMENT BUILD";
 #else
-        private const string CURRENT_VERSION_STRING = "1.21";
+        private const string CURRENT_VERSION_STRING = "1.3";
 #endif
 
         private const string TITLE_STRING = "CH Color Editor v" + CURRENT_VERSION_STRING;
