@@ -43,6 +43,7 @@ namespace CHColourEditor
         private bool lockUpdates;
 
         public Dictionary<string, string> GuitarColors = new Dictionary<string, string>();
+        public Dictionary<string, string> SixFretColors = new Dictionary<string, string>();
         public Dictionary<string, string> DrumsColors = new Dictionary<string, string>();
         public Dictionary<string, string> OtherColors = new Dictionary<string, string>();
 
@@ -131,6 +132,14 @@ namespace CHColourEditor
                 // Adds the key to the forms list and the internal dictionary for storing the key and its value
                 guitarList.Items.Add(key.KeyName.ToString());
                 GuitarColors.Add(key.KeyName, key.Value);
+            }
+            for (int i = 0; i < IniData.Sections["sixfret"].Count; i++)
+            {
+                KeyData key = IniData.Sections["sixfret"].ElementAt(i);
+                key.Value = "#FFFFFF";
+                // Adds the key to the forms list and the internal dictionary for storing the key and its value
+                sixFretList.Items.Add(key.KeyName.ToString());
+                SixFretColors.Add(key.KeyName, key.Value);
             }
             // Drums List
             for (int i = 0; i < IniData.Sections["drums"].Count; i++)
@@ -250,6 +259,11 @@ namespace CHColourEditor
                 {
                     IniData.Sections["guitar"][pair.Key] = pair.Value;
                 }
+                // Six Fret Values
+                foreach (KeyValuePair<string, string> pair in SixFretColors)
+                {
+                    IniData.Sections["sixfret"][pair.Key] = pair.Value;
+                }
                 // Drum Values
                 foreach (KeyValuePair<string, string> pair in DrumsColors)
                 {
@@ -286,6 +300,11 @@ namespace CHColourEditor
                     foreach (KeyValuePair<string, string> pair in GuitarColors)
                     {
                         IniData.Sections["guitar"][pair.Key] = pair.Value;
+                    }
+                    // Six Fret Values
+                    foreach (KeyValuePair<string, string> pair in SixFretColors)
+                    {
+                        IniData.Sections["sixfret"][pair.Key] = pair.Value;
                     }
                     // Drum Values
                     foreach (KeyValuePair<string, string> pair in DrumsColors)
@@ -391,8 +410,19 @@ namespace CHColourEditor
                     Text = $"*{TITLE_STRING} - {saveFileDialog.FileName}";
                     unsavedChanges = true;
                     break;
-                // Drums
+                // Six Fret
                 case 1:
+                    foreach (object selectedItem in sixFretList.SelectedItems)
+                    {
+                        string item = selectedItem.ToString().Trim();
+                        item = item.ToLower().Replace(' ', '_');
+                        SixFretColors[item] = ColorTranslator.ToHtml(currentColorRgb);
+                    }
+                    Text = $"*{TITLE_STRING} - {saveFileDialog.FileName}";
+                    unsavedChanges = true;
+                    break;
+                // Drums
+                case 2:
                     foreach (object selectedItem in drumsList.SelectedItems)
                     {
                         string item = selectedItem.ToString().Trim();
@@ -403,7 +433,7 @@ namespace CHColourEditor
                     unsavedChanges = true;
                     break;
                 // Other
-                case 2:
+                case 3:
                     foreach (object selectedItem in otherList.SelectedItems)
                     {
                         string item = selectedItem.ToString().Trim();
@@ -470,6 +500,7 @@ namespace CHColourEditor
 
             // Make the selected item on each list the first one
             guitarList.SelectedIndex = 0; // We have to do guitar twice to initialise it or else it will crash because of the event handlers.
+            sixFretList.SelectedIndex = 0;
             drumsList.SelectedIndex = 0;
             otherList.SelectedIndex = 0;
             // Guitar is done last because it triggers the event handlers which will update the color in the color picker, and we want it to be the guitar one.
@@ -518,6 +549,25 @@ namespace CHColourEditor
                 guitarList.Items.Add(keyName.ToString());
                 GuitarColors.Add(key.KeyName, key.Value);
             }
+            // SixFret List
+            for (int i = 0; i < IniData.Sections["sixfret"].Count; i++)
+            {
+                KeyData key = IniData.Sections["sixfret"].ElementAt(i);
+                StringBuilder keyName = new StringBuilder();
+                // The names in the ini files are all lowercase with _ in between each word which isn't very pretty looking so we change this.
+                // Changes all underscores to spaces.
+                string keyNameSpaces = key.KeyName.Replace('_', ' ');
+                foreach (string word in keyNameSpaces.Split(' '))
+                {
+                    // Changes the first letter of now each word to uppercase.
+                    keyName.Append(word[0].ToString().ToUpper());
+                    keyName.Append(word.Substring(1, word.Length - 1));
+                    keyName.Append(" ");
+                }
+                // Adds the key to the forms list and the internal dictionary for storing the key and its value
+                sixFretList.Items.Add(keyName.ToString());
+                SixFretColors.Add(key.KeyName, key.Value);
+            }
             // Drums List
             for (int i = 0; i < IniData.Sections["drums"].Count; i++)
             {
@@ -553,6 +603,8 @@ namespace CHColourEditor
         {
             GuitarColors.Clear();
             guitarList.Items.Clear();
+            SixFretColors.Clear();
+            sixFretList.Items.Clear();
             DrumsColors.Clear();
             drumsList.Items.Clear();
             OtherColors.Clear();
@@ -571,6 +623,15 @@ namespace CHColourEditor
 
             if (!lockUpdates)
                 UpdateAllColors(ColorTranslator.FromHtml(GuitarColors[item]));
+        }
+
+        private void sixFretList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string item = sixFretList.SelectedItem.ToString().Trim();
+            item = item.ToLower().Replace(' ', '_');
+
+            if (!lockUpdates)
+                UpdateAllColors(ColorTranslator.FromHtml(SixFretColors[item]));
         }
 
         private void drumsList_SelectedIndexChanged(object sender, EventArgs e)
@@ -600,18 +661,33 @@ namespace CHColourEditor
             {
                 case 0:
                     // When added to the forms list, Windows adds a space to the end of the string which won't match the dictionary key so we have to trim it
+                    if (guitarList.SelectedItem is null)
+                        return;
                     item = guitarList.SelectedItem.ToString().Trim();
                     item = item.ToLower().Replace(' ', '_');
 
                     UpdateAllColors(ColorTranslator.FromHtml(GuitarColors[item]));
                     break;
                 case 1:
+                    // When added to the forms list, Windows adds a space to the end of the string which won't match the dictionary key so we have to trim it
+                    if (sixFretList.SelectedItem is null)
+                        return;
+                    item = sixFretList.SelectedItem.ToString().Trim();
+                    item = item.ToLower().Replace(' ', '_');
+
+                    UpdateAllColors(ColorTranslator.FromHtml(SixFretColors[item]));
+                    break;
+                case 2:
+                    if (drumsList.SelectedItem is null)
+                        return;
                     item = drumsList.SelectedItem.ToString().Trim();
                     item = item.ToLower().Replace(' ', '_');
 
                     UpdateAllColors(ColorTranslator.FromHtml(DrumsColors[item]));
                     break;
-                case 2:
+                case 3:
+                    if (otherList.SelectedItem is null)
+                        return;
                     item = otherList.SelectedItem.ToString().Trim();
                     item = item.ToLower().Replace(' ', '_');
 
@@ -632,12 +708,16 @@ namespace CHColourEditor
                 case 0:
                     list.AddRange(from object obj in guitarList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
                     break;
-                // Drums
+                // Six Fret
                 case 1:
+                    list.AddRange(from object obj in sixFretList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
+                    break;
+                // Drums
+                case 2:
                     list.AddRange(from object obj in drumsList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
                     break;
                 // Other
-                case 2:
+                case 3:
                     list.AddRange(from object obj in otherList.SelectedItems select obj.ToString().Trim().ToLower().Replace(' ', '_'));
                     break;
             }
@@ -687,6 +767,11 @@ namespace CHColourEditor
                     {
                         IniData.Sections["guitar"][pair.Key] = pair.Value;
                     }
+                    // Six Fret Values
+                    foreach (KeyValuePair<string, string> pair in SixFretColors)
+                    {
+                        IniData.Sections["sixfret"][pair.Key] = pair.Value;
+                    }
                     // Drum Values
                     foreach (KeyValuePair<string, string> pair in DrumsColors)
                     {
@@ -706,5 +791,6 @@ namespace CHColourEditor
             }
             return result;
         }
+
     }
 }

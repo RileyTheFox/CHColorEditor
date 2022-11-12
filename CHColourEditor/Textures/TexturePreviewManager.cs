@@ -119,10 +119,14 @@ namespace CHColourEditor
                         path += "guitar\\" + SpriteKeys.GuitarSprites[key];
                     break;
                 case 1:
+                    if (SpriteKeys.SixFretSprites.ContainsKey(key))
+                        path += "sixfret\\" + SpriteKeys.SixFretSprites[key];
+                    break;
+                case 2:
                     if (SpriteKeys.DrumSprites.ContainsKey(key))
                         path += "drums\\" + SpriteKeys.DrumSprites[key];
                     break;
-                case 2:
+                case 3:
                     if (SpriteKeys.OtherSprites.ContainsKey(key))
                         path += "other\\" + SpriteKeys.OtherSprites[key];
                     break;

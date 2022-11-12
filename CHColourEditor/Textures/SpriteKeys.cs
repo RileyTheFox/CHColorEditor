@@ -7,6 +7,7 @@ namespace CHColourEditor
     {
 
         public Dictionary<string, string> GuitarSprites = new();
+        public Dictionary<string, string> SixFretSprites = new();
         public Dictionary<string, string> DrumSprites = new();
         public Dictionary<string, string> OtherSprites = new();
 

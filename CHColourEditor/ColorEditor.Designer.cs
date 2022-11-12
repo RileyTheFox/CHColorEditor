@@ -36,6 +36,8 @@ namespace CHColourEditor
             this.groupBox_ItemList = new System.Windows.Forms.GroupBox();
             this.tabControl_Sections = new System.Windows.Forms.TabControl();
             this.guitarPage = new System.Windows.Forms.TabPage();
+            this.sixPage = new System.Windows.Forms.TabPage();
+            this.sixFretList = new System.Windows.Forms.ListBox();
             this.drumsPage = new System.Windows.Forms.TabPage();
             this.drumsList = new System.Windows.Forms.ListBox();
             this.otherPage = new System.Windows.Forms.TabPage();
@@ -83,6 +85,7 @@ namespace CHColourEditor
             this.groupBox_ItemList.SuspendLayout();
             this.tabControl_Sections.SuspendLayout();
             this.guitarPage.SuspendLayout();
+            this.sixPage.SuspendLayout();
             this.drumsPage.SuspendLayout();
             this.otherPage.SuspendLayout();
             this.colorPickerContainer.SuspendLayout();
@@ -150,6 +153,7 @@ namespace CHColourEditor
             // tabControl_Sections
             // 
             this.tabControl_Sections.Controls.Add(this.guitarPage);
+            this.tabControl_Sections.Controls.Add(this.sixPage);
             this.tabControl_Sections.Controls.Add(this.drumsPage);
             this.tabControl_Sections.Controls.Add(this.otherPage);
             this.tabControl_Sections.Location = new System.Drawing.Point(7, 22);
@@ -171,6 +175,28 @@ namespace CHColourEditor
             this.guitarPage.TabIndex = 0;
             this.guitarPage.Text = "Guitar";
             this.guitarPage.UseVisualStyleBackColor = true;
+            // 
+            // sixPage
+            // 
+            this.sixPage.Controls.Add(this.sixFretList);
+            this.sixPage.Location = new System.Drawing.Point(4, 24);
+            this.sixPage.Name = "sixPage";
+            this.sixPage.Padding = new System.Windows.Forms.Padding(3);
+            this.sixPage.Size = new System.Drawing.Size(304, 344);
+            this.sixPage.TabIndex = 3;
+            this.sixPage.Text = "6 Fret";
+            this.sixPage.UseVisualStyleBackColor = true;
+            // 
+            // sixFretList
+            // 
+            this.sixFretList.FormattingEnabled = true;
+            this.sixFretList.ItemHeight = 15;
+            this.sixFretList.Location = new System.Drawing.Point(5, 5);
+            this.sixFretList.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.sixFretList.Name = "sixFretList";
+            this.sixFretList.Size = new System.Drawing.Size(294, 334);
+            this.sixFretList.TabIndex = 1;
+            this.sixFretList.SelectedIndexChanged += new System.EventHandler(this.sixFretList_SelectedIndexChanged);
             // 
             // drumsPage
             // 
@@ -355,7 +381,7 @@ namespace CHColourEditor
             this.colorSlider.ColorMode = MechanikaDesign.WinForms.UI.ColorPicker.ColorModes.Hue;
             this.colorSlider.ColorRGB = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(205)))), ((int)(((byte)(0)))));
             this.colorSlider.Location = new System.Drawing.Point(300, 20);
-            this.colorSlider.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
+            this.colorSlider.Margin = new System.Windows.Forms.Padding(7);
             this.colorSlider.Name = "colorSlider";
             this.colorSlider.NubColor = System.Drawing.Color.White;
             this.colorSlider.Position = 143;
@@ -596,21 +622,21 @@ namespace CHColourEditor
             // toolStripMenu_Changelog
             // 
             this.toolStripMenu_Changelog.Name = "toolStripMenu_Changelog";
-            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_Changelog.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenu_Changelog.Text = "Changelog";
             this.toolStripMenu_Changelog.Click += new System.EventHandler(this.toolStripMenu_Changelog_Click);
             // 
             // toolStripMenu_CheckForUpdates
             // 
             this.toolStripMenu_CheckForUpdates.Name = "toolStripMenu_CheckForUpdates";
-            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_CheckForUpdates.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenu_CheckForUpdates.Text = "Check for Updates";
             this.toolStripMenu_CheckForUpdates.Click += new System.EventHandler(this.toolStripCheckForUpdates_Click);
             // 
             // toolStripMenu_About
             // 
             this.toolStripMenu_About.Name = "toolStripMenu_About";
-            this.toolStripMenu_About.Size = new System.Drawing.Size(180, 22);
+            this.toolStripMenu_About.Size = new System.Drawing.Size(171, 22);
             this.toolStripMenu_About.Text = "About";
             this.toolStripMenu_About.Click += new System.EventHandler(this.toolStripAbout_Click);
             // 
@@ -637,6 +663,7 @@ namespace CHColourEditor
             this.groupBox_ItemList.ResumeLayout(false);
             this.tabControl_Sections.ResumeLayout(false);
             this.guitarPage.ResumeLayout(false);
+            this.sixPage.ResumeLayout(false);
             this.drumsPage.ResumeLayout(false);
             this.otherPage.ResumeLayout(false);
             this.colorPickerContainer.ResumeLayout(false);
@@ -703,6 +730,8 @@ namespace CHColourEditor
         private System.Windows.Forms.ToolStripMenuItem toolStripMenu_New_BlankProfile;
         private System.Windows.Forms.GroupBox groupBox_ItemList;
         private System.Windows.Forms.GroupBox colorPickerContainer;
+        private System.Windows.Forms.TabPage sixPage;
+        private System.Windows.Forms.ListBox sixFretList;
     }
 }
 
